@@ -1,0 +1,502 @@
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import axios from "axios";
+import { api } from "../services/api";
+import type { Employee } from "../types/employeeType";
+import type { User } from "../types/userType";
+import type { CompOff } from "../types/leaveType";
+
+export type Holiday = {
+  id: number;
+  title: string;
+  description?: string;
+  date: string;
+  isPaid: boolean;
+  holidayTypeId: number;
+  regionId?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// Leave
+export type Leave = {
+  id: number;
+  title: string;
+  description?: string;
+  from: string;
+  to: string;
+  type: string;
+  isPaid: boolean;
+  status: "Pending" | "Approved" | "Rejected";
+  employeeId: number;
+  appliedById: number;
+  appliedByEmployeeId?: number | null;
+  appliedByUserId?: number | null;
+  employee?: Employee | null;
+  appliedByEmployee?: Employee | null;
+  appliedByUser?: User | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// type LeaveGroup = {
+//   employeeId: number;
+//   name: string;
+//   leaves: Leave[];
+// };
+// event
+export type Event = {
+  id: number;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate?: string;
+  color?: string;
+  regionId?: number | null;
+  type?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+interface LeaveBalance {
+  totalAccrued: number;
+  totalUsed: number;
+  remaining: number;
+  remainingThisMonth: number;
+}
+
+type WorkspaceState = {
+  holidays: Holiday[];
+  selectedHoliday: Holiday | null;
+  addSuccessHoliday: Holiday | null;
+  loading: boolean;
+  error: string | null;
+  totalPages: number;
+  fetchHolidays: () => Promise<void>;
+  getHolidayById: (id: number) => Promise<void>;
+  addHoliday: (data: Partial<Holiday>) => Promise<void>;
+  updateHoliday: (id: number, data: Partial<Holiday>) => Promise<void>;
+  deleteHoliday: (id: number) => Promise<void>;
+
+  // Leave
+  leaves: Leave[];
+  pendingLeaves: Leave[];
+  selectedLeave: Leave | null;
+  leavesEach: Leave[];
+  leaveBalanceEach: LeaveBalance | null;
+  fetchLeaves: (page?: number, status?: string) => Promise<void>;
+  fetchPendingLeaves: (page?: number, status?: string) => Promise<void>;
+  fetchLeavesEach: (id: number) => Promise<void>;
+  getLeaveById: (id: number) => Promise<void>;
+  addLeave: (data: Partial<Leave>) => Promise<void>;
+  updateLeave: (id: number, data: Partial<Leave>) => Promise<void>;
+  deleteLeave: (id: number) => Promise<void>;
+
+  // Events
+  events: Event[];
+  selectedEvent: Event | null;
+  addSuccessEvent: Event | null;
+
+  fetchEvents: () => Promise<void>;
+  getEventById: (id: number) => Promise<void>;
+  addEvent: (data: Partial<Event>) => Promise<void>;
+  updateEvent: (id: number, data: Partial<Event>) => Promise<void>;
+  deleteEvent: (id: number) => Promise<void>;
+
+  // compOff
+  compOffs: CompOff[];
+  selectedCompOff: CompOff | null;
+
+  fetchCompOffs: () => Promise<void>;
+  getCompOffById: (id: number) => Promise<void>;
+  addCompOff: (data: Partial<CompOff>) => Promise<void>;
+  updateCompOff: (id: number, data: Partial<CompOff>) => Promise<void>;
+  deleteCompOff: (id: number) => Promise<void>;
+  updateCompOffStatus: (id: number, status: string) => Promise<void>;
+};
+
+export const useWorkforceStore = create<WorkspaceState>()(
+  persist(
+    (set) => ({
+      holidays: [],
+      selectedHoliday: null,
+      addSuccessHoliday: null,
+      loading: false,
+      error: null,
+      // leave
+      leaves: [],
+      pendingLeaves: [],
+      selectedLeave: null,
+      leavesEach: [],
+      leaveBalanceEach: null,
+      totalPages: 1,
+
+      // events
+      events: [],
+      selectedEvent: null,
+      addSuccessEvent: null,
+
+      // compOff
+      compOffs: [],
+      selectedCompOff: null,
+
+      //   Holiday
+      fetchHolidays: async () => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.get("/workforce/holiday", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set({ holidays: res.data.holidays ?? [], loading: false });
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      getHolidayById: async (id) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.get(`/workforce/holiday/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set({ selectedHoliday: res.data.holiday ?? null, loading: false });
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      addHoliday: async (data) => {
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.post("/workforce/holiday", data, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set({ addSuccessHoliday: res.data, loading: false });
+          await useWorkforceStore.getState().fetchHolidays();
+        } catch (error) {
+          handleError(error, set);
+        }
+      },
+
+      updateHoliday: async (id, data) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.put(`/workforce/holiday/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          await useWorkforceStore.getState().fetchHolidays();
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      deleteHoliday: async (id) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.delete(`/workforce/holiday/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set((state) => ({
+            holidays: state.holidays.filter((h) => h.id !== id),
+            loading: false,
+          }));
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      // Leave
+      fetchLeaves: async (page = 1, status = "") => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.get(
+            `/workforce/leave?page=${page}&status=${status}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          set({
+            leaves: res.data.leaves ?? [],
+            totalPages: res.data.totalPages,
+            loading: false,
+          });
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      // Pending
+      fetchPendingLeaves: async (page = 1, status = "") => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.get(
+            `/workforce/pendingLeave?page=${page}&status=${status}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          set({
+            pendingLeaves: res.data.leaves ?? [],
+            totalPages: res.data.totalPages,
+            loading: false,
+          });
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      getLeaveById: async (id) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.get(`/workforce/leave/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set({ selectedLeave: res.data.leave ?? null, loading: false });
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      fetchLeavesEach: async (id) => {
+        const res = await api.get(`/workforce/leave/leave-by-employee/${id}`);
+        set({
+          leavesEach: res.data.leaves,
+          leaveBalanceEach: res.data.leaveBalance,
+        });
+      },
+      addLeave: async (data: Partial<Leave>) => {
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.post(
+            "/workforce/leave",
+            {
+              title: data.title,
+              description: data.description,
+              from: data.from,
+              to: data.to,
+              type: data.type,
+              isPaid: data.isPaid ?? true,
+              employeeId: data.employeeId,
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          await useWorkforceStore.getState().fetchLeaves();
+        } catch (error) {
+          handleError(error, set);
+        }
+      },
+
+      updateLeave: async (id: number, data: Partial<Leave>) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.put(`/workforce/leave/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          await useWorkforceStore.getState().fetchLeaves();
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      deleteLeave: async (id) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.delete(`/workforce/leave/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set((state) => ({
+            leaves: state.leaves.filter((l) => l.id !== id),
+            loading: false,
+          }));
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      fetchEvents: async () => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.get("/workforce/event", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set({ events: res.data.events ?? [], loading: false });
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      getEventById: async (id) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.get(`/workforce/event/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set({ selectedEvent: res.data.event ?? null, loading: false });
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      addEvent: async (data) => {
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.post("/workforce/event", data, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set({ addSuccessEvent: res.data, loading: false });
+          await useWorkforceStore.getState().fetchEvents();
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      updateEvent: async (id, data) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.put(`/workforce/event/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          await useWorkforceStore.getState().fetchEvents();
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      deleteEvent: async (id) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.delete(`/workforce/event/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set((state) => ({
+            deleteEvents: state.events,
+            loading: false,
+          }));
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      // compOff
+      fetchCompOffs: async () => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.get("/workforce/compoff", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          set({ compOffs: res.data.compOffs ?? [], loading: false });
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      updateCompOffStatus: async (id, status) => {
+        try {
+          const { data } = await api.patch(`/workforce/compoff/${id}`, {
+            status,
+          });
+          set((state) => ({
+            compOffs: state.compOffs.map((c) =>
+              c.id === id ? { ...c, status: data.compOff.status } : c
+            ),
+          }));
+        } catch (err: unknown) {
+          console.error("Failed to update CompOff status:", err);
+        }
+      },
+
+      getCompOffById: async (id) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          const res = await api.get(`/workforce/compoff/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set({
+            selectedCompOff: res.data.compOff?.compOff ?? null,
+            loading: false,
+          });
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      addCompOff: async (data) => {
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.post("/workforce/compoff", data, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          await useWorkforceStore.getState().fetchCompOffs();
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      updateCompOff: async (id, data) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.put(`/workforce/compoff/${id}`, data, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          await useWorkforceStore.getState().fetchCompOffs();
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+
+      deleteCompOff: async (id) => {
+        set({ loading: true, error: null });
+        try {
+          const token = localStorage.getItem("auth_token");
+          await api.delete(`/workforce/compoff/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          set((state) => ({
+            compOffs: state.compOffs.filter((c) => c.id !== id),
+            loading: false,
+          }));
+        } catch (err) {
+          handleError(err, set);
+        }
+      },
+    }),
+    {
+      name: "workspace-storage",
+    }
+  )
+);
+
+// Common error handler
+function handleError(
+  err: unknown,
+  set: (partial: Partial<WorkspaceState>) => void
+) {
+  if (axios.isAxiosError(err)) {
+    set({
+      error: err.response?.data?.message || "Request failed",
+      loading: false,
+    });
+  } else {
+    set({ error: "Unexpected error occurred", loading: false });
+  }
+}
