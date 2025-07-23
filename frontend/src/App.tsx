@@ -15,6 +15,7 @@ import Attendance from "./pages/attendance/Attendance";
 import ViewPayrollPage from "./pages/payroll/ViewPayrollPage";
 import MainLeave from "./pages/workforce/leave/MainLeave";
 import UserProfile from "./pages/user/userDetails/UserProfile";
+import SignUpForm from "./pages/Auth/login/SignUpForm";
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
           </Route>
 
           <Route path="/signin" element={<SignInForm />} />
+          <Route path="/signup" element={<SignUpForm />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

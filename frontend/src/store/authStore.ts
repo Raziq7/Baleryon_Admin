@@ -18,6 +18,7 @@ type AuthState = {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   setToken: (token: string) => void;
+  signup: (email: string, password: string, phone: string, name: string, type: string) => Promise<void>;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -41,12 +42,33 @@ export const useAuthStore = create<AuthState>()(
           const { token, user } = res.data; // your backend response
           localStorage.setItem("auth_token", token);
           localStorage.setItem("user", JSON.stringify(user));
-          set({ token, userLoged:user, loading: false });
+          set({ token, userLoged: user, loading: false });
           // Save token in axios headers
           // api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         } catch (err: unknown) {
           if (axios.isAxiosError(err)) {
             const errorMsg = err.response?.data?.error || "Login failed";
+            set({ error: errorMsg, loading: false });
+          } else {
+            set({ error: "An unexpected error occurred", loading: false });
+          }
+        }
+      },
+
+      signup: async (email: string, password: string, phone: string, name: string, type: string) => {
+        set({ loading: true, error: null });
+        try {
+          console.log("Attempting to signup with:", email, password, phone, name, type);
+          const res = await api.post("/auth/register", { email, password, name, phone, type });
+          const { token, user } = res.data; // your backend response
+          localStorage.setItem("auth_token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+          set({ token, userLoged: user, loading: false });
+          // Save token in axios headers
+          // api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } catch (err: unknown) {
+          if (axios.isAxiosError(err)) {
+            const errorMsg = err.response?.data?.error || "SignUp failed";
             set({ error: errorMsg, loading: false });
           } else {
             set({ error: "An unexpected error occurred", loading: false });

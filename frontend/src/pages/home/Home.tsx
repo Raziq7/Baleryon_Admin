@@ -5,42 +5,53 @@ import EcommerceMetrics from "../../components/ecommerce/EcommerceMetrics";
 // import RecentOrders from "../../components/ecommerce/RecentOrders";
 import DemographicCard from "../../components/ecommerce/DemographicCard";
 import PageMeta from "../../components/common/PageMeta";
-import { useAuth } from "../../utils/useAuth";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useDashboardStore } from "../../store/dashboardStore";
+// import { useAuth } from "../../utils/useAuth";
+// import { useNavigate } from "react-router-dom";
+// import { useEffect } from "react";
+// import { useDashboardStore } from "../../store/dashboardStore";
 import UpcomingEvents from "../../components/ecommerce/UpcomingEvents";
 
 export default function Home() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
+  // const navigate = useNavigate();
+  // const { user } = useAuth();
 
-  const { data: overviewData, loading, fetchDashboard } = useDashboardStore();
+  // const { data: overviewData, loading, fetchDashboard } = useDashboardStore();
 
-  const safeEvents = overviewData?.upcomingEvents.map((event) => ({
-    ...event,
-    type: (event.type || "Info") as "Info" | "Success" | "Warning" | "Danger",
-  }));
+  // const safeEvents = overviewData?.upcomingEvents.map((event) => ({
+  //   ...event,
+  //   type: (event.type || "Info") as "Info" | "Success" | "Warning" | "Danger",
+  // }));
 
-  useEffect(() => {
-    if (!user) navigate("/signin");
-  }, [user, navigate]);
+  // useEffect(() => {
+  //   if (!user) navigate("/signin");
+  // }, [user, navigate]);
 
-  useEffect(() => {
-    fetchDashboard();
-  }, [fetchDashboard]);
+  // useEffect(() => {
+  //   fetchDashboard();
+  // }, [fetchDashboard]);
 
-  if (!user || loading || !overviewData) return <p>Loading dashboard...</p>;
+  // if (!user || loading || !overviewData) return <p>Loading dashboard...</p>;
 
   return (
     <>
       <PageMeta
-        title="HRMS FOR OCELOTS"
-        description="Admin Dashboard For HRMS Ocelots"
+        title="Investor-DMS"
+        description="Investor Dashboard For DMS"
       />
       <div className="grid grid-cols-4 gap-4 md:gap-6">
         <div className="col-span-12 space-y-6 xl:col-span-12">
-          <EcommerceMetrics data={overviewData.overview} />
+          <EcommerceMetrics
+            data={{
+              totalEmployees: 0,
+              totalDepartments: 0,
+              todayAttendanceCount: 0,
+              changes: {
+                employeeChange: 0,
+                departmentChange: 0,
+                attendanceChange: 0,
+              },
+            }}
+          />
 
           {/* <MonthlySalesChart /> */}
         </div>
@@ -54,11 +65,11 @@ export default function Home() {
         </div> */}
 
         <div className="col-span-12 xl:col-span-5">
-          <DemographicCard data={overviewData.demographics || []} />
+          <DemographicCard data={[]} />
         </div>
 
         <div className="col-span-12 xl:col-span-7">
-          <UpcomingEvents data={safeEvents || []} />
+          <UpcomingEvents data={[]} />
         </div>
       </div>
     </>

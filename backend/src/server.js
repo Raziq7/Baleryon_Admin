@@ -6,17 +6,9 @@ import bodyParser from "body-parser";
 import sanitizedConfig from "./config.js";
 
 import authRouter from "./routes/authRouter.js";
-import userRouter from "./routes/userRouter.js";
-import departmentRouter from "./routes/departmentRouter.js";
-import adminRouter from "./routes/adminRouter.js";
-import employeeRouter from "./routes/employeeRouter.js";
-import settingRouter from "./routes/settingRouter.js";
-import workforceRouter from "./routes/workforceRouter.js";
-import attendanceRouter from "./routes/attendanceRoute.js";
 import dashBoardRouter from "./routes/dashboardRoutes.js";
 
 import { errorHandler, notFound } from "./middlewares/errorMiddlware.js";
-import { pushBiometricAttendance } from "./controller/attendanceController.js";
 
 dotenv.config();
 
@@ -43,14 +35,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/api/auth/", authRouter);
-app.use("/api/users", userRouter);
-app.use("/api/admin", adminRouter);
-app.use("/api/employee", employeeRouter);
-app.use("/api/department", departmentRouter);
-app.use("/api/department", departmentRouter);
-app.use("/api/setting", settingRouter);
-app.use("/api/workforce", workforceRouter);
-app.use("/api/attendance/", attendanceRouter);
 app.use("/api/dashboard/", dashBoardRouter);
 
 // app.all("/iclock/*", (req, res) => {

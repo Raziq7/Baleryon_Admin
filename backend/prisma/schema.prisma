@@ -1,3 +1,85 @@
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+// model User {
+//   id        String  @id @default(uuid())
+//   UserID    String? @unique
+//   name      String
+//   email     String  @unique
+//   password  String
+//   phone     String?
+//   image_url String?
+
+//   roleId String?
+//   role   Role?   @relation(fields: [roleId], references: [id])
+
+//   branchId String?
+//   branch   Branch? @relation(fields: [branchId], references: [id])
+
+//   // Self-referencing field for hierarchical relationships
+//   managerId String?
+//   manager   User?   @relation("UserManager", fields: [managerId], references: [id])
+
+//   // Users under this manager (subordinates)
+//   subordinates User[] @relation("UserManager")
+
+//   // Optional fields for future sales incentive system
+//   salesTarget   Float? @default(0)
+//   salesAchieved Float? @default(0)
+//   incentive     Float? @default(0)
+
+//   isActive  Boolean  @default(true)
+//   isLogin   Boolean  @default(false)
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Role {
+//   id          String           @id @default(uuid())
+//   name        String           @unique
+//   description String?
+//   users       User[]
+//   permissions RolePermission[]
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Permission {
+//   id          String           @id @default(uuid())
+//   name        String           @unique
+//   description String?
+//   roles       RolePermission[]
+// }
+
+// model RolePermission {
+//   id           String     @id @default(uuid())
+//   role         Role       @relation(fields: [roleId], references: [id])
+//   roleId       String
+//   permission   Permission @relation(fields: [permissionId], references: [id])
+//   permissionId String
+//   access       String? // "View", "Update", "Delete", etc.
+
+//   @@unique([roleId, permissionId, access]) // optional to avoid duplicates
+// }
+
+// model Branch {
+//   id        String   @id @default(uuid())
+//   name      String   @unique // Add @unique directive here
+//   location  String?
+//   users     User[]
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// {{// NEW MODEL}}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,365 +90,168 @@ datasource db {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  userUniqueId String? @unique
+  id        String  @id @default(uuid())
+  UserID    String? @unique
+  name      String
+  email     String  @unique
+  password  String
+  phone     String?
+  image_url String?
+
+  roleId String?
+  role   Role?   @relation(fields: [roleId], references: [id])
+
+  branchId String?
+  branch   Branch? @relation(fields: [branchId], references: [id])
+
+  investments Investment[] @relation("UserInvestments")
+
+  managerId    String?
+  manager      User?   @relation("UserManager", fields: [managerId], references: [id])
+  subordinates User[]  @relation("UserManager")
+
+  salesTarget   Float? @default(0)
+  salesAchieved Float? @default(0)
+  incentive     Float? @default(0)
+
+  isActive  Boolean  @default(true)
+  isLogin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignedInvestors Investor[]
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  users       User[]
+  permissions RolePermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  role         Role       @relation(fields: [roleId], references: [id])
+  roleId       String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  permissionId String
+  access       String?
+
+  @@unique([roleId, permissionId, access])
+}
+
+model Branch {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  location  String?
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Investor {
+  id                    String   @id @default(uuid())
+  name                  String
+  email                 String   @unique
+  phone                 String?
+  type                  String   // Individual, HNI, NRI, Company etc.
+  address               String?
+  pan                   String?
+  aadhaar               String?
+  gstNumber             String?
+  referredBy            String?
+  status                String   @default("Pending") 
+  password              String   
+  relationshipManagerId String?
+  relationshipManager   User?    @relation(fields: [relationshipManagerId], references: [id])
+  documents             String[] 
+  investments           Investment[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+
+model InvestmentType {
+  id            String                  @id @default(uuid())
+  name          String                  @unique
+  description   String?
+  opportunities InvestmentOpportunity[]
+}
+
+model BusinessCategory {
+  id            String                  @id @default(uuid())
+  name          String                  @unique
+  description   String?
+  opportunities InvestmentOpportunity[]
+}
+
+model InvestmentOpportunity {
+  id           String   @id @default(uuid())
   name         String
-  email        String  @unique
-  password     String
-  role         String
+  brandName    String
+  description       String
+  minAmount    Float
+  maxAmount    Float?
+  roiPercent   Float
+  lockInMonths Int
+  exitOptions  String?
+  payoutMode   String // Monthly, Quarterly, etc.
+  isActive     Boolean  @default(true)
+  documents    String[] // Array of file URLs
 
-  departmentId Int?
-  department   Department? @relation("DepartmentUsers", fields: [departmentId], references: [id])
-  headOf       Department? @relation("DepartmentHead")
-  employees    Employee[]  @relation("UserCoordinator")
+  investmentTypeId String
+  investmentType   InvestmentType @relation(fields: [investmentTypeId], references: [id])
 
-  // Relations
-  qualifications  Qualification[]
-  employments     Employment[]
-  references      Reference[]
-  payroll         Payroll[]
-  // Bank details
-  BankDetails     BankDetail[]
-  // Attendance
-  AttendanceLog   AttendanceLog[]
-  DailyAttendance DailyAttendance[]
-  // Comp Off
-  CompOff         CompOff[]
+  businessCategoryId String
+  businessCategory   BusinessCategory @relation(fields: [businessCategoryId], references: [id])
 
-  // Leaves (User-initiated)
-  leavesAppliedByUser Leave[]  @relation("UserAppliedLeaves")
-  createdAt           DateTime @default(now())
+  investments Investment[]
 }
 
-model Department {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+model Investment {
+  id            String  @id @default(uuid())
+  investorId    String
+  opportunityId String
+  createdById   String?
 
-  headId    Int?       @unique
-  head      User?      @relation("DepartmentHead", fields: [headId], references: [id])
-  users     User[]     @relation("DepartmentUsers") // : all users in the department
-  employees Employee[]
+  investor    Investor              @relation(fields: [investorId], references: [id])
+  opportunity InvestmentOpportunity @relation(fields: [opportunityId], references: [id])
+  createdBy   User?                 @relation("UserInvestments", fields: [createdById], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  amount          Float
+  date            DateTime
+  roiPercent      Float
+  payoutMode      String
+  contractStart   DateTime
+  contractEnd     DateTime
+  paymentMethod   String
+  agreementSigned Boolean  @default(false)
+  status          String   @default("Ongoing")
+
+  payouts Payout[]
 }
 
-model Employee {
-  id               Int       @id @default(autoincrement())
-  employeeUniqueId String?   @unique
-  name             String
-  email            String    @unique
-  mobile           String?
-  designation      String?
-  sex              String?
-  dob              DateTime?
-  placeOfBirth     String?
-  age              Int?
-  height           Float?
-  weight           Float?
-  bloodGroup       String?
-  nationality      String?
-  maritalStatus    String?
+model Payout {
+  id           String    @id @default(uuid())
+  investmentId String
+  dueDate      DateTime
+  amountDue    Float
+  amountPaid   Float?
+  paidDate     DateTime?
+  paymentMode  String?
+  receiptRef   String?
+  notes        String?
 
-  currentAddress String?
-  currentPinCode String?
-
-  permanentAddress String?
-  permanentPinCode String?
-
-  profileImageUrl String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Foreign Keys
-  departmentId Int?
-  department   Department? @relation(fields: [departmentId], references: [id])
-
-  coordinatorId Int?
-  coordinator   User? @relation("UserCoordinator", fields: [coordinatorId], references: [id])
-
-  qualifications          Qualification[]
-  employments             Employment[]
-  references              Reference[]
-  payroll                 Payroll[]
-  // Leave relations
-  leavesAssigned          Leave[]         @relation("EmployeeLeaves")
-  leavesAppliedByEmployee Leave[]         @relation("AppliedLeaves")
-
-  // bank details
-  BankDetails BankDetail[]
-
-  AttendanceLog   AttendanceLog[]
-  DailyAttendance DailyAttendance[]
-  CompOff         CompOff[]
-
-  // Legal/Personal Info
-  liabilitiesDetails    String?
-  familyBackground      String?
-  hasFamilyBusiness     Boolean? @default(false)
-  familyBusinessDetails String?
-  isPhysicallyImpaired  Boolean? @default(false)
-  impairmentDetails     String?
-
-  // Admin fields
-  employeeCode    String?   @unique
-  dateOfJoining   DateTime?
-  position        String?
-  salaryOnJoining Float?
-  reportingTo     String?
-  hiredBy         String?
-  replacementOf   String?
-  isRehire        Boolean?  @default(false)
-}
-
-model Qualification {
-  id           Int      @id @default(autoincrement())
-  employeeId   Int      @default(0)
-  userUniqueId Int      @default(0)
-  standard     String   @unique
-  fromYear     Int
-  toYear       Int
-  percentage   Float?
-  employee     Employee @relation(fields: [employeeId], references: [id])
-
-  user User @relation(fields: [userUniqueId], references: [id])
-}
-
-model Employment {
-  id               Int      @id @default(autoincrement())
-  employeeId       Int
-  employerName     String
-  positionHeld     String
-  location         String
-  workedFrom       DateTime
-  workedTill       DateTime
-  lastSalaryDrawn  Float?
-  reasonForLeaving String?
-  remarks          String?
-  employee         Employee @relation(fields: [employeeId], references: [id])
-  User             User?    @relation(fields: [userId], references: [id])
-  userId           Int?
-}
-
-model BankDetail {
-  id            Int      @id @default(autoincrement())
-  bankName      String
-  accountNumber String
-  ifscCode      String
-  branch        String?
-  accountType   String?
-  upiId         String?
-  employeeId    Int
-  employee      Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  User          User?    @relation(fields: [userId], references: [id])
-  userId        Int?
-}
-
-model Reference {
-  id           Int      @id @default(autoincrement())
-  employeeId   Int
-  name         String
-  positionHeld String
-  organization String
-  contact      String
-  employee     Employee @relation(fields: [employeeId], references: [id])
-  User         User?    @relation(fields: [userId], references: [id])
-  userId       Int?
-}
-
-// payroll
-model Payroll {
-  id         Int      @id @default(autoincrement())
-  employeeId Int
-  employee   Employee @relation(fields: [employeeId], references: [id])
-
-  month Int // 1 to 12
-  year  Int // e.g., 2025
-
-  baseSalary      Float // Basic Salary
-  hra             Float // House Rent Allowance
-  otherAllowances Float? // Travel, food etc.
-  grossSalary     Float // base + hra + otherAllowances
-
-  epf             Float? // Provident Fund
-  esi             Float? // Employee State Insurance
-  taxDeduction    Float? // TDS, Professional Tax etc.
-  totalDeductions Float // sum of all deductions
-
-  netPay Float // gross - deductions
-
-  paymentDate DateTime? // When payment was made
-  isPaid      Boolean   @default(false)
-
-  remarks String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
-
-  @@unique([employeeId, month, year])
-}
-
-//    Holiday
-
-model Holiday {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  date        DateTime
-  isPaid      Boolean  @default(true)
-
-  // Relations
-  holidayTypeId Int
-  holidayType   HolidayType @relation(fields: [holidayTypeId], references: [id])
-
-  regionId Int?
-  region   Region? @relation(fields: [regionId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-//        settings
-
-model Region {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  description String?
-  holidays    Holiday[]
-  events      Event[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model HolidayType {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique // "National", "Regional", "Optional", "Company"
-  holidays  Holiday[] // Relation to Holiday
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-// leave
-model Leave {
-  id                  Int       @id @default(autoincrement())
-  title               String
-  description         String?
-  from                DateTime
-  to                  DateTime
-  type                String
-  isPaid              Boolean   @default(true)
-  employeeId          Int
-  employee            Employee  @relation("EmployeeLeaves", fields: [employeeId], references: [id])
-  appliedByEmployeeId Int?
-  appliedByEmployee   Employee? @relation("AppliedLeaves", fields: [appliedByEmployeeId], references: [id])
-
-  appliedByUserId Int?
-  appliedByUser   User? @relation("UserAppliedLeaves", fields: [appliedByUserId], references: [id])
-
-  status    LeaveStatus @default(PENDING)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  CompOff   CompOff[]
-}
-
-enum LeaveType {
-  SICK
-  CASUAL
-  UNPAID
-  MATERNITY
-}
-
-enum LeaveStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-// CompOff
-model CompOff {
-  id          Int           @id @default(autoincrement())
-  title       String
-  employeeId  Int
-  employee    Employee      @relation(fields: [employeeId], references: [id])
-  workedFrom  DateTime
-  workedTo    DateTime
-  reason      String?
-  daysGranted Int
-  hoursEarned Float?
-  status      CompOffStatus @default(PENDING)
-  appliedOn   DateTime      @default(now())
-  usedFrom    DateTime?
-  usedTo      DateTime?
-  leaveId     Int?
-  leave       Leave?        @relation(fields: [leaveId], references: [id])
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  User        User?         @relation(fields: [userId], references: [id])
-  userId      Int?
-}
-
-enum CompOffStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  USED
-}
-
-// Event
-model Event {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  startDate   DateTime
-  endDate     DateTime
-  type        String // e.g., Meeting, Conference, Workshop
-  regionId    Int?
-  region      Region?  @relation(fields: [regionId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// Attendance
-model AttendanceLog {
-  id         String   @id @default(uuid())
-  employeeId Int?
-  userId     Int?
-  timestamp  DateTime
-  punchType  String
-  source     String
-  deviceId   String?
-  verifyMode Int? 
-  createdAt  DateTime @default(now())
-
-  employee Employee? @relation(fields: [employeeId], references: [id])
-  User     User?     @relation(fields: [userId], references: [id])
-
-  // @@unique([employeeId, timestamp])
-  // @@unique([userId, timestamp])
-}
-
-model DailyAttendance {
-  id         String    @id @default(cuid())
-  employeeId Int?
-  employee   Employee? @relation(fields: [employeeId], references: [id])
-  date       DateTime
-  checkIn    DateTime?
-  checkOut   DateTime?
-  totalHours Float?
-  otHours    Float?
-  status     String
-  source     String
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  User       User?     @relation(fields: [userId], references: [id])
-  userId     Int?
-
-  @@unique([employeeId, date], name: "employee_date_unique")
-  @@unique([userId, date], name: "user_date_unique")
+  investment Investment @relation(fields: [investmentId], references: [id])
 }
