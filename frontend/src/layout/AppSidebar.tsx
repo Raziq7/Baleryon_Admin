@@ -104,8 +104,8 @@ const navItems: NavItem[] = [
         />
       </svg>
     ),
-    name: "Deparment",
-    path: "/depart-managment",
+    name: "Investment Details",
+    path: "/investment-details",
   },
   {
     icon: (

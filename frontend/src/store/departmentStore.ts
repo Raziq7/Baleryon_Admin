@@ -35,7 +35,7 @@ type User = {
 type DepartmentState = {
   departments: Department[];
   findDepartments: Department[];
-  findUserDepartments:User[]
+  findUserDepartments: User[]
   selectedDepartment: Department | null;
   loading: boolean;
   error: string | null;
@@ -52,7 +52,7 @@ export const useDepartmentStore = create<DepartmentState>()(
     (set) => ({
       departments: [],
       findDepartments: [],
-      findUserDepartments:[],
+      findUserDepartments: [],
       selectedDepartment: null,
       loading: false,
       error: null,
@@ -61,16 +61,24 @@ export const useDepartmentStore = create<DepartmentState>()(
         set({ loading: true, error: null });
         try {
           const token = localStorage.getItem("auth_token");
-          const res = await api.get("/department", {
+          // Get user id from localStorage user field
+          const userStr = localStorage.getItem("user");
+          const user = userStr ? JSON.parse(userStr) : null;
+          const userId = user?.id;
+
+          const res = await api.get("/investor/findInvestmentDetails", {
             headers: { Authorization: `Bearer ${token}` },
+            params: { userID: userId },
           });
-          set({ findDepartments: res.data?.departments, loading: false });
+
+          console.log(res.data.investments, "resssssssssssssssssssssssss")
+          set({ findDepartments: res.data?.investments, loading: false });
         } catch (err) {
           handleError(err, set);
         }
       },
 
-       fetchUsersDepartment: async (id) => {
+      fetchUsersDepartment: async (id) => {
         set({ loading: true, error: null });
         try {
           const token = localStorage.getItem("auth_token");

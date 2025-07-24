@@ -26,15 +26,15 @@ export default function ListDepartment() {
   return (
     <>
       <PageMeta
-        title="Department Management"
-        description="This is Department page for HRMS"
+        title="Investment Details"
+        description="This is Investment details page for DMS"
       />
-      <PageBreadcrumb pageTitle="Department Table" />
+      <PageBreadcrumb pageTitle="Investment Details" />
       <div className="space-y-6">
         <ComponentCard
-          title="Department Table"
-          buttonTitle="Add Department"
-          handleButtonClick={() => setOpen(true)}
+          title="Investment Details Table"
+          buttonTitle=""
+          // handleButtonClick={() => setOpen(true)}
         >
           <DepartmentTable
             openModal={(id) => {

@@ -7,6 +7,8 @@ import sanitizedConfig from "./config.js";
 
 import authRouter from "./routes/authRouter.js";
 import dashBoardRouter from "./routes/dashboardRoutes.js";
+import investmentDetailsRouter from "./routes/investment-details.Routes.js";
+
 
 import { errorHandler, notFound } from "./middlewares/errorMiddlware.js";
 
@@ -36,6 +38,8 @@ app.use((req, res, next) => {
 });
 app.use("/api/auth/", authRouter);
 app.use("/api/dashboard/", dashBoardRouter);
+app.use("/api/investor/", investmentDetailsRouter);
+
 
 // app.all("/iclock/*", (req, res) => {
 //   console.log("📥 Received something at /iclock/*", req.method, req.url);
@@ -74,7 +78,7 @@ app.post("/iclock/cdata.aspx", express.raw({ type: "*/*" }), async (req, res) =>
       await pushBiometricAttendance(
         { body },
         {
-          status: () => ({ json: () => {} }), // dummy response
+          status: () => ({ json: () => { } }), // dummy response
         }
       );
     } catch (err) {

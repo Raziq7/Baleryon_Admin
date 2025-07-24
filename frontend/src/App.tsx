@@ -24,7 +24,7 @@ function App() {
         <Routes>
           <Route element={<LayoutContent />}>
             <Route path="/" element={<Home />} />
-            <Route path="/depart-managment" element={<ListDepartment />} />
+            <Route path="/investment-details" element={<ListDepartment />} />
             <Route path="/user-management" element={<ListUser />} />
             <Route
               path="/employee-management/add-details/:id"
