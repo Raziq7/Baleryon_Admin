@@ -3,7 +3,8 @@ import Badge from "../ui/badge/Badge";
 type Overview = {
   totalEmployees: number;
   totalDepartments: number;
-  todayAttendanceCount: number;
+  totalEarned: number;
+  totalDueAmount:number;
   changes?: {
     employeeChange: number;
     departmentChange: number;
@@ -233,10 +234,10 @@ export default function EcommerceMetrics({ data }: Props) {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Next Payout
+              Total Earned
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {data.todayAttendanceCount.toLocaleString()}
+              {data.totalEarned.toLocaleString()}
             </h4>
           </div>
           <Badge color={getBadgeColor(data.changes?.attendanceChange ?? 0)}>

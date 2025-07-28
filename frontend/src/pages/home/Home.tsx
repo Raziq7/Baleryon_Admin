@@ -3,13 +3,13 @@ import EcommerceMetrics from "../../components/ecommerce/EcommerceMetrics";
 // import StatisticsChart from "../../components/ecommerce/StatisticsChart";
 // // import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
 // import RecentOrders from "../../components/ecommerce/RecentOrders";
-import DemographicCard from "../../components/ecommerce/DemographicCard";
+// import DemographicCard from "../../components/ecommerce/DemographicCard";
 import PageMeta from "../../components/common/PageMeta";
 // import { useAuth } from "../../utils/useAuth";
 // import { useNavigate } from "react-router-dom";
 // import { useEffect } from "react";
 // import { useDashboardStore } from "../../store/dashboardStore";
-import UpcomingEvents from "../../components/ecommerce/UpcomingEvents";
+// import UpcomingEvents from "../../components/ecommerce/UpcomingEvents";
 import { useEffect } from "react";
 import { useDashboardStore } from "../../store/dashboardStore";
 
@@ -34,11 +34,12 @@ export default function Home() {
             data={{
               totalEmployees: data?.investments.length ?? 0, // You can use investments count or any relevant metric
               totalDepartments: data?.payouts.length ?? 0, // Similarly for payouts
-              todayAttendanceCount: data?.payouts?.length ?? 0, // Upcoming events as an example
+              totalEarned: data?.totalEarned ?? 0, // Total earned
+              totalDueAmount: data?.totalDueAmount ?? 0, // Total due amount
               changes: {
-                employeeChange: 10, 
-                departmentChange: -5, 
-                attendanceChange: 15, 
+                employeeChange: 10,
+                departmentChange: -5,
+                attendanceChange: 15,
               },
             }}
           />
@@ -54,13 +55,13 @@ export default function Home() {
           <StatisticsChart />
         </div> */}
 
-        <div className="col-span-12 xl:col-span-5">
+        {/* <div className="col-span-12 xl:col-span-5">
           <DemographicCard data={[]} />
-        </div>
+        </div> */}
 
-        <div className="col-span-12 xl:col-span-7">
+        {/* <div className="col-span-12 xl:col-span-7">
           <UpcomingEvents data={[]} />
-        </div>
+        </div> */}
       </div>
     </>
   );

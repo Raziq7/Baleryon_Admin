@@ -31,6 +31,8 @@ type Payout = {
 
 type Investment = {
   id: string;
+  investorId: string;
+  opportunityId: string;
   amount: number;
   date: string;
   roiPercent: number;
@@ -42,13 +44,16 @@ type Investment = {
   status: string;
   opportunity: InvestmentOpportunity | null;
   payouts: Payout[];
+  totalEarned: number;
+  totalPending: number;
+  totalDueAmount: number;
 };
-
-
 
 type InvestorPortalData = {
   investments: Investment[];
   payouts: Payout[];
+  totalEarned: number; // Add totalEarned
+  totalDueAmount: number; // Add totalDueAmount
 };
 
 type DashboardState = {
@@ -78,12 +83,30 @@ export const useDashboardStore = create<DashboardState>((set) => ({
       });
 
       const investments = response.data?.data || [];
+
+      // Calculate total earned and total due amount
+      const totalEarned = investments.reduce(
+        (sum: number, investment: Investment) => {
+          return sum + (investment.totalEarned || 0); // Assuming `totalEarned` exists in the Investment object
+        },
+        0
+      );
+
+      const totalDueAmount = investments.reduce(
+        (sum: number, investment: Investment) => {
+          return sum + (investment.totalPending || 0); // Assuming `totalPending` exists in the Investment object
+        },
+        0
+      );
+
       set((state) => {
         const prevData = state.data || { investments: [], payouts: [] };
         return {
           data: {
             ...prevData,
             investments,
+            totalEarned, // Add totalEarned here
+            totalDueAmount, // Add totalDueAmount here
           },
           loading: false,
         };
@@ -114,12 +137,20 @@ export const useDashboardStore = create<DashboardState>((set) => ({
       });
 
       const payouts = response.data?.data || [];
-      set((state) => {
-        const prevData = state.data || { investments: [], payouts: [], };
+
+      // Update the state with new payouts data while keeping existing investments
+      set((state: DashboardState) => {
+        const prevData = state.data || {
+          investments: [],
+          payouts: [],
+          totalEarned: 0,
+          totalDueAmount: 0,
+        }; // Ensure all fields are initialized
+
         return {
           data: {
             ...prevData,
-            payouts,
+            payouts
           },
           loading: false,
         };
