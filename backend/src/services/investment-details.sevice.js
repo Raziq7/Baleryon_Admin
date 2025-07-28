@@ -1,74 +1,100 @@
-import { prisma } from '../config/db.js';
+// services/investment-details.service.js
+import { prisma } from "../config/db.js";
 
-export const investmentDetailsFind = async ({ userID }) => {
-    // Find the investment by id, and include related investor and opportunity details
-    const investments = await prisma.investment.findMany({
-        where: { id: userID },
+// Get all investments for a specific investor
+export const getInvestmentsService = async (userId) => {
+  const investments = await prisma.investment.findMany({
+    where: { investorId: userId },
+    include: {
+      opportunity: {
         include: {
-            investor: true,
-            opportunity: {
-                include: {
-                    investmentType: true,
-                    businessCategory: true
-                }
-            },
-            payouts: true
-        }
-    });
+          investmentType: true,
+          businessCategory: true,
+        },
+      },
+      payouts: true,
+    },
+  });
 
-    if (!investments || investments.length === 0) {
-        throw new Error('No Investment Exist');
-    }
+  if (!investments || investments.length === 0) {
+    throw new Error("No investments found");
+  }
 
-    // Map each investment to the desired structure
-    return {
-        investments: investments.map(investment => ({
-            id: investment.id,
-            amount: investment.amount,
-            date: investment.date,
-            roiPercent: investment.roiPercent,
-            payoutMode: investment.payoutMode,
-            contractStart: investment.contractStart,
-            contractEnd: investment.contractEnd,
-            paymentMethod: investment.paymentMethod,
-            agreementSigned: investment.agreementSigned,
-            status: investment.status,
-            payouts: investment.payouts,
-            opportunity: investment.opportunity
-                ? {
-                    id: investment.opportunity.id,
-                    name: investment.opportunity.name,
-                    brandName: investment.opportunity.brandName,
-                    description: investment.opportunity.description,
-                    minAmount: investment.opportunity.minAmount,
-                    maxAmount: investment.opportunity.maxAmount,
-                    roiPercent: investment.opportunity.roiPercent,
-                    lockInMonths: investment.opportunity.lockInMonths,
-                    exitOptions: investment.opportunity.exitOptions,
-                    payoutMode: investment.opportunity.payoutMode,
-                    isActive: investment.opportunity.isActive,
-                    documents: investment.opportunity.documents,
-                    investmentType: investment.opportunity.investmentType,
-                    businessCategory: investment.opportunity.businessCategory
-                }
-                : null,
-            investor: investment.investor
-                ? {
-                    id: investment.investor.id,
-                    name: investment.investor.name,
-                    email: investment.investor.email,
-                    phone: investment.investor.phone,
-                    type: investment.investor.type,
-                    address: investment.investor.address,
-                    pan: investment.investor.pan,
-                    aadhaar: investment.investor.aadhaar,
-                    gstNumber: investment.investor.gstNumber,
-                    referredBy: investment.investor.referredBy,
-                    status: investment.investor.status,
-                    createdAt: investment.investor.createdAt,
-                    updatedAt: investment.investor.updatedAt
-                }
-                : null
-        }))
-    };
+  return investments;
+};
+
+// Get all payouts for the logged-in investor
+export const getPayoutsService = async (userId) => {
+  // Fetch the investments related to the investor
+  const investments = await prisma.investment.findMany({
+    where: {
+      investorId: userId, // Find investments for the logged-in investor
+    },
+    include: {
+      payouts: true, // Include associated payouts for each investment
+    },
+  });
+
+  // Extract payouts from the fetched investments
+  const payouts = investments.flatMap((investment) => investment.payouts);
+
+  return payouts;
+};
+
+// Get upcoming payouts for the logged-in investor
+export const getUpcomingPayoutsService = async (userId) => {
+  const upcomingPayouts = await prisma.payout.findMany({
+    where: {
+      investment: {
+        investorId: userId,
+      },
+      dueDate: {
+        gte: new Date(),
+      },
+    },
+    orderBy: {
+      dueDate: "asc",
+    },
+  });
+
+  if (!upcomingPayouts || upcomingPayouts.length === 0) {
+    throw new Error("No upcoming payouts found");
+  }
+
+  return upcomingPayouts;
+};
+
+
+// Get all investment opportunities that the logged-in investor hasn't invested in
+export const getNonInvestedOpportunitiesService = async (userId) => {
+  // Fetch all investment opportunities
+  const allOpportunities = await prisma.investmentOpportunity.findMany({
+    where: {
+      isActive: true, 
+    },
+  });
+
+  // Fetch the investments for the logged-in investor
+  const investorInvestments = await prisma.investment.findMany({
+    where: {
+      investorId: userId, // Get investments by this investor
+    },
+    select: {
+      opportunityId: true, // Only get the opportunity ids
+    },
+  });
+
+  // Extract opportunity IDs that the investor has already invested in
+  const investedOpportunityIds = investorInvestments.map(
+    (investment) => investment.opportunityId
+  );
+
+  // Filter out the opportunities that the investor has already invested in
+  const nonInvestedOpportunities = allOpportunities.filter(
+    (opportunity) => !investedOpportunityIds.includes(opportunity.id)
+  );
+
+  console.log(nonInvestedOpportunities,"nonInvestedOpportunitiesnonInvestedOpportunitiesnonInvestedOpportunitiesnonInvestedOpportunities");
+  
+  return nonInvestedOpportunities;
 };

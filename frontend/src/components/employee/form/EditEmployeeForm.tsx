@@ -3,7 +3,7 @@ import ComponentCard from "../../common/ComponentCard";
 import Input from "../../input/InputField.tsx";
 import Label from "../../form-elements/Label.tsx";
 import Select from "../../form/Select.tsx";
-import { useDepartmentStore } from "../../../store/departmentStore.ts";
+import { useInvestmentStore } from "../../../store/investmentStore.ts";
 import { useEmployeeStore } from "../../../store/employeeStore.ts";
 
 interface Props {
@@ -49,16 +49,16 @@ export default function EditEmployeeForm({ employee }: Props) {
   const { selectedEmployee, getEmployeeById, updateEmployee, error } =
     useEmployeeStore();
 
-  const fetchDepartments = useDepartmentStore(
-    (state) => state.fetchDepartments
+  const fetchInvestmentDetails = useInvestmentStore(
+    (state) => state.fetchInvestmentDetails
   );
 
-  const fetchUsersDepartment = useDepartmentStore(
+  const fetchUsersDepartment = useInvestmentStore(
     (state) => state.fetchUsersDepartment
   );
-  const findDepartments = useDepartmentStore((state) => state.findDepartments);
+  const findInvestmentDetails = useInvestmentStore((state) => state.findInvestmentDetails);
 
-  const findUserDepartments = useDepartmentStore(
+  const findUserDepartments = useInvestmentStore(
     (state) => state.findUserDepartments
   );
 
@@ -77,19 +77,19 @@ export default function EditEmployeeForm({ employee }: Props) {
   }, [findUserDepartments]);
 
   useEffect(() => {
-    fetchDepartments();
+    fetchInvestmentDetails();
     getEmployeeById(employee.id);
-  }, [employee.id, fetchDepartments, getEmployeeById]);
+  }, [employee.id, fetchInvestmentDetails, getEmployeeById]);
 
   useEffect(() => {
-    if (findDepartments) {
-      const formatted = findDepartments.map((dep) => ({
+    if (findInvestmentDetails) {
+      const formatted = findInvestmentDetails.map((dep) => ({
         value: dep.id,
         label: dep.name,
       }));
       setDepartmentOptions(formatted);
     }
-  }, [findDepartments]);
+  }, [findInvestmentDetails]);
 
   useEffect(() => {
     if (selectedEmployee && selectedEmployee.id === employee.id) {

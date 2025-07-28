@@ -3,7 +3,7 @@ import ComponentCard from "../../common/ComponentCard";
 import Input from "../../input/InputField.tsx";
 import Label from "../../form-elements/Label.tsx";
 import Select from "../../form/Select.tsx";
-import { useDepartmentStore } from "../../../store/departmentStore.ts";
+import { useInvestmentStore } from "../../../store/investmentStore.ts";
 import { useEmployeeStore } from "../../../store/employeeStore.ts";
 
 interface Department {
@@ -43,36 +43,36 @@ export default function AddEmployeeForm() {
   const addEmployee = useEmployeeStore((state) => state.createEmployee);
   const error = useEmployeeStore((state) => state.error);
 
-  const fetchDepartments = useDepartmentStore(
-    (state) => state.fetchDepartments
+  const fetchInvestmentDetails = useInvestmentStore(
+    (state) => state.fetchInvestmentDetails
   );
 
-  const fetchUsersDepartment = useDepartmentStore(
+  const fetchUsersDepartment = useInvestmentStore(
     (state) => state.fetchUsersDepartment
   );
 
-  const findUserDepartments = useDepartmentStore(
+  const findUserDepartments = useInvestmentStore(
     (state) => state.findUserDepartments
   );
 
-  const findDepartments = useDepartmentStore((state) => state.findDepartments);
+  const findInvestmentDetails = useInvestmentStore((state) => state.findInvestmentDetails);
 
   useEffect(() => {
-    fetchDepartments();
-  }, [fetchDepartments]);
+    fetchInvestmentDetails();
+  }, [fetchInvestmentDetails]);
 
   useEffect(() => {
-    if (findDepartments && Array.isArray(findDepartments)) {
+    if (findInvestmentDetails && Array.isArray(findInvestmentDetails)) {
       const formatted = [
         { value: 0, label: "Select a user" },
-        ...findDepartments.map((dep) => ({
+        ...findInvestmentDetails.map((dep) => ({
           value: dep.id,
           label: dep.name,
         })),
       ];
       setDepartmentOptions(formatted);
     }
-  }, [findDepartments]);
+  }, [findInvestmentDetails]);
 
   useEffect(() => {
     if (userDepartmentOptions.length === 1) {

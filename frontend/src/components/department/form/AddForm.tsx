@@ -2,7 +2,7 @@ import { useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import Input from "../../input/InputField.tsx";
 import Label from "../../form-elements/Label.tsx";
-import { useDepartmentStore } from "../../../store/departmentStore.ts";
+import { useInvestmentStore } from "../../../store/investmentStore.ts";
 
 export default function AddDepartmentForm() {
   const [name, setName] = useState("");
@@ -12,10 +12,10 @@ export default function AddDepartmentForm() {
 
   // state of department
 
-  const addDepartment = useDepartmentStore((state) => state.addDepartment);
+  const addDepartment = useInvestmentStore((state) => state.addDepartment);
 
 
-  const error = useDepartmentStore((state) => state.error);
+  const error = useInvestmentStore((state) => state.error);
 
 
   const validate = () => {

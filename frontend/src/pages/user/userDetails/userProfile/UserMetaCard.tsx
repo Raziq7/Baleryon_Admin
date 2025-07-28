@@ -3,7 +3,7 @@ import { Modal } from "../../../../components/ui/modal";
 import Input from "../../../../components/form/input/InputField";
 import Label from "../../../../components/form/Label";
 
-import { useDepartmentStore } from "../../../../store/departmentStore";
+import { useInvestmentStore } from "../../../../store/investmentStore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Area } from "react-easy-crop";
 import Cropper from "react-easy-crop";
@@ -57,26 +57,26 @@ export default function UserMetaCard({
 
   const { isOpen, openModal, closeModal } = useModal();
 
-  const fetchUsersDepartment = useDepartmentStore((state) => state.fetchUsersDepartment);
-  const fetchDepartments = useDepartmentStore((state) => state.fetchDepartments);
-  const findUserDepartments = useDepartmentStore((state) => state.findUserDepartments);
-  const findDepartments = useDepartmentStore((state) => state.findDepartments);
+  const fetchUsersDepartment = useInvestmentStore((state) => state.fetchUsersDepartment);
+  const fetchInvestmentDetails = useInvestmentStore((state) => state.fetchInvestmentDetails);
+  const findUserDepartments = useInvestmentStore((state) => state.findUserDepartments);
+  const findInvestmentDetails = useInvestmentStore((state) => state.findInvestmentDetails);
 
   const uploadImage = useUploadStore((state) => state.uploadImage);
 
   useEffect(() => {
-    fetchDepartments();
-  }, [fetchDepartments]);
+    fetchInvestmentDetails();
+  }, [fetchInvestmentDetails]);
 
   useEffect(() => {
-    if (findDepartments) {
-      const formatted = findDepartments.map((dep) => ({
+    if (findInvestmentDetails) {
+      const formatted = findInvestmentDetails.map((dep) => ({
         value: dep.id,
         label: dep.name,
       }));
       setDepartmentOptions(formatted);
     }
-  }, [findDepartments]);
+  }, [findInvestmentDetails]);
 
   useEffect(() => {
     if (findUserDepartments && Array.isArray(findUserDepartments)) {

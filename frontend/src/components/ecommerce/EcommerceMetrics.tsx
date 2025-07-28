@@ -20,11 +20,9 @@ const getBadgeColor = (
 ): "success" | "error" | "warning" | "info" | undefined =>
   value > 0 ? "success" : value < 0 ? "error" : "warning";
 
-
-
 export default function EcommerceMetrics({ data }: Props) {
   return (
-<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {/* Total Employees */}
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
         <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
@@ -56,7 +54,7 @@ export default function EcommerceMetrics({ data }: Props) {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Total Employees
+              Total Investment
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
               {data.totalEmployees.toLocaleString()}
@@ -152,14 +150,14 @@ export default function EcommerceMetrics({ data }: Props) {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Total Departments
+              Total Payouts
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
               {data.totalDepartments.toLocaleString()}
             </h4>
           </div>
           <Badge color={getBadgeColor(data.changes?.departmentChange ?? 0)}>
-              {data.changes?.departmentChange ?? 0 > 0 ? (
+            {data.changes?.departmentChange ?? 0 > 0 ? (
               <svg
                 className="fill-current"
                 width="12"
@@ -235,7 +233,7 @@ export default function EcommerceMetrics({ data }: Props) {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Today’s Attendance
+              Next Payout
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
               {data.todayAttendanceCount.toLocaleString()}

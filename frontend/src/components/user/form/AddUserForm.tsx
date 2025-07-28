@@ -4,7 +4,7 @@ import Input from "../../input/InputField.tsx";
 import Label from "../../form-elements/Label.tsx";
 import { useUserStore } from "../../../store/userStore.ts";
 import Select from "../../form/Select.tsx";
-import { useDepartmentStore } from "../../../store/departmentStore.ts";
+import { useInvestmentStore } from "../../../store/investmentStore.ts";
 
 interface Department {
   value: number;
@@ -26,20 +26,20 @@ export default function AddUserForm() {
   const addUser = useUserStore((state) => state.addUser);
   const error = useUserStore((state) => state.error);
 
-  const fetchDepartments = useDepartmentStore(
-    (state) => state.fetchDepartments
+  const fetchInvestmentDetails = useInvestmentStore(
+    (state) => state.fetchInvestmentDetails
   );
-  const findDepartments = useDepartmentStore((state) => state.findDepartments);
+  const findInvestmentDetails = useInvestmentStore((state) => state.findInvestmentDetails);
 
   useEffect(() => {
-    fetchDepartments();
-  }, [fetchDepartments]);
+    fetchInvestmentDetails();
+  }, [fetchInvestmentDetails]);
 
   useEffect(() => {
-    if (findDepartments && Array.isArray(findDepartments)) {
+    if (findInvestmentDetails && Array.isArray(findInvestmentDetails)) {
       const formatted: Department[] = [
         { value: 0, label: "Select a user" },
-        ...findDepartments.map((department) => ({
+        ...findInvestmentDetails.map((department) => ({
           value: department.id,
           label: department.name,
         })),
@@ -47,7 +47,7 @@ export default function AddUserForm() {
 
       setDepartmentOptions(formatted);
     }
-  }, [findDepartments]);
+  }, [findInvestmentDetails]);
 
   const validate = () => {
     const newErrors: typeof errors = {};

@@ -5,7 +5,7 @@ import Label from "../../form-elements/Label.tsx";
 import { useUserStore } from "../../../store/userStore.ts";
 import Loader from "../../common/Loader.tsx";
 import Select from "../../form/Select.tsx";
-import { useDepartmentStore } from "../../../store/departmentStore.ts";
+import { useInvestmentStore } from "../../../store/investmentStore.ts";
 
 interface EditUserFormProps {
   user: {
@@ -31,7 +31,7 @@ export default function EditUserForm({ user }: EditUserFormProps) {
   // const updateUser = useUserStore((state) => state.updateUser);
   const getUserById = useUserStore((state) => state.getUserById);
   const selectedUser = useUserStore((state) => state.selectedUser);
-  const findDepartments = useDepartmentStore((state) => state.findDepartments);
+  const findInvestmentDetails = useInvestmentStore((state) => state.findInvestmentDetails);
   const error = useUserStore((state) => state.error);
   const loading = useUserStore((state) => state.loading);
 
@@ -45,7 +45,7 @@ export default function EditUserForm({ user }: EditUserFormProps) {
     if (selectedUser) {
       console.log(
         selectedUser,
-        "findDepartmentsfindDepartmentsfindDepartmentsfindDepartments"
+        "findInvestmentDetailsfindInvestmentDetailsfindInvestmentDetailsfindInvestmentDetails"
       );
 
       setName(selectedUser.name);
@@ -55,17 +55,17 @@ export default function EditUserForm({ user }: EditUserFormProps) {
   }, [selectedUser]);
 
   useEffect(() => {
-    if (findDepartments && Array.isArray(findDepartments)) {
+    if (findInvestmentDetails && Array.isArray(findInvestmentDetails)) {
       const formatted: Department[] = [
         { value: 0, label: "Select a user" },
-        ...findDepartments.map((department) => ({
+        ...findInvestmentDetails.map((department) => ({
           value: department.id,
           label: department.name,
         })),
       ];
       setDepartmentOptions(formatted);
     }
-  }, [findDepartments]);
+  }, [findInvestmentDetails]);
 
   const validate = () => {
     const newErrors: typeof errors = {};

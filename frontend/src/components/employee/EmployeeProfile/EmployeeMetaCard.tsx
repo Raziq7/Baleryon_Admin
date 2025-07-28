@@ -4,7 +4,7 @@ import Button from "../../ui/button/Button";
 import Input from "../../form/input/InputField";
 import Label from "../../form/Label";
 import Select from "../../form/Select";
-import { useDepartmentStore } from "../../../store/departmentStore";
+import { useInvestmentStore } from "../../../store/investmentStore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEmployeeStore } from "../../../store/employeeStore";
 import getCroppedImg from "../../../utils/cropImageHelper";
@@ -62,21 +62,21 @@ export default function UserMetaCard({
 
   const { isOpen, openModal, closeModal } = useModal();
 
-  const fetchUsersDepartment = useDepartmentStore(
+  const fetchUsersDepartment = useInvestmentStore(
     (state) => state.fetchUsersDepartment
   );
 
-  const fetchDepartments = useDepartmentStore(
-    (state) => state.fetchDepartments
+  const fetchInvestmentDetails = useInvestmentStore(
+    (state) => state.fetchInvestmentDetails
   );
 
-  const findUserDepartments = useDepartmentStore(
+  const findUserDepartments = useInvestmentStore(
     (state) => state.findUserDepartments
   );
 
   const { updateEmployee } = useEmployeeStore();
 
-  const findDepartments = useDepartmentStore((state) => state.findDepartments);
+  const findInvestmentDetails = useInvestmentStore((state) => state.findInvestmentDetails);
   const { fetchDaily, daily } = useAttendanceStore((state) => state);
 
   const uploadImage = useUploadStore((state) => state.uploadImage);
@@ -96,19 +96,19 @@ export default function UserMetaCard({
   }, [findUserDepartments]);
 
   useEffect(() => {
-    fetchDepartments();
+    fetchInvestmentDetails();
     // getEmployeeById(employee.id);
-  }, [fetchDepartments]);
+  }, [fetchInvestmentDetails]);
 
   useEffect(() => {
-    if (findDepartments) {
-      const formatted = findDepartments.map((dep) => ({
+    if (findInvestmentDetails) {
+      const formatted = findInvestmentDetails.map((dep) => ({
         value: dep.id,
         label: dep.name,
       }));
       setDepartmentOptions(formatted);
     }
-  }, [findDepartments]);
+  }, [findInvestmentDetails]);
 
   useEffect(() => {
     fetchDaily(id);

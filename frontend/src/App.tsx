@@ -3,11 +3,11 @@ import "./App.css";
 import LayoutContent from "./layout/LayoutContent";
 import Home from "./pages/home/Home";
 import SignInForm from "./pages/Auth/login/SignInForm";
-import ListDepartment from "./pages/department/ListDepartment";
-import ListUser from "./pages/user";
+import Listinvestment from "./pages/investmentDetails/ListInvestmentDetails";
+// import ListUser from "./pages/user";
 import NotFound from "./pages/404/NotFound";
 import ListEmployee from "./pages/employee/ListEmployee";
-import EmployeeProfiles from "./pages/employee/EmployeeDetails/EmployeeProfile";
+// import EmployeeProfiles from "./pages/employee/EmployeeDetails/EmployeeProfile";
 import Calendar from "./pages/Calendar";
 import Setting from "./pages/setting/Setting";
 import ListHoliday from "./pages/workforce/holiday/ListHoliday";
@@ -16,6 +16,7 @@ import ViewPayrollPage from "./pages/payroll/ViewPayrollPage";
 import MainLeave from "./pages/workforce/leave/MainLeave";
 import UserProfile from "./pages/user/userDetails/UserProfile";
 import SignUpForm from "./pages/Auth/login/SignUpForm";
+import Payout from "./pages/payouts/PayoutsMain";
 
 function App() {
   return (
@@ -24,12 +25,15 @@ function App() {
         <Routes>
           <Route element={<LayoutContent />}>
             <Route path="/" element={<Home />} />
-            <Route path="/investment-details" element={<ListDepartment />} />
-            <Route path="/user-management" element={<ListUser />} />
+            <Route path="/investment-details" element={<Listinvestment />} />
+            <Route path="/investment-payouts" element={<Payout />} />
+
+
+            {/* <Route path="/user-management" element={<ListUser />} />
             <Route
               path="/employee-management/add-details/:id"
               element={<EmployeeProfiles />}
-            />
+            /> */}
 
             {/* employee managment */}
             <Route path="/employee-management" element={<ListEmployee />} />

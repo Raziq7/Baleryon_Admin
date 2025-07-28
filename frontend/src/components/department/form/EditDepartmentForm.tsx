@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import Input from "../../input/InputField.tsx";
 import Label from "../../form-elements/Label.tsx";
-import { useDepartmentStore } from "../../../store/departmentStore.ts";
+import { useInvestmentStore } from "../../../store/investmentStore.ts";
 import Loader from "../../common/Loader.tsx";
 
 interface EditDepartmentFormProps {
@@ -18,18 +18,18 @@ export default function EditDepartmentForm({
   const [headId, setHeadId] = useState(0);
   const [errors, setErrors] = useState<{ name?: string; headId?: string }>({});
 
-  const updateDepartment = useDepartmentStore(
+  const updateDepartment = useInvestmentStore(
     (state) => state.updateDepartment
   );
-  const error = useDepartmentStore((state) => state.error);
+  const error = useInvestmentStore((state) => state.error);
 
-  const getDepartmentById = useDepartmentStore(
+  const getDepartmentById = useInvestmentStore(
     (state) => state.getDepartmentById
   );
-  const selectedDepartment = useDepartmentStore(
+  const selectedDepartment = useInvestmentStore(
     (state) => state.selectedDepartment
   );
-  const loading = useDepartmentStore((state) => state.loading);
+  const loading = useInvestmentStore((state) => state.loading);
 
   useEffect(() => {
     async function fetchData() {

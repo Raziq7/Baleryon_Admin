@@ -10,45 +10,35 @@ import PageMeta from "../../components/common/PageMeta";
 // import { useEffect } from "react";
 // import { useDashboardStore } from "../../store/dashboardStore";
 import UpcomingEvents from "../../components/ecommerce/UpcomingEvents";
+import { useEffect } from "react";
+import { useDashboardStore } from "../../store/dashboardStore";
 
 export default function Home() {
-  // const navigate = useNavigate();
-  // const { user } = useAuth();
+  const { data, loading, error, fetchInvestments, fetchPayouts } =
+    useDashboardStore();
 
-  // const { data: overviewData, loading, fetchDashboard } = useDashboardStore();
+  useEffect(() => {
+    fetchInvestments();
+    fetchPayouts();
+  }, [fetchInvestments, fetchPayouts]);
 
-  // const safeEvents = overviewData?.upcomingEvents.map((event) => ({
-  //   ...event,
-  //   type: (event.type || "Info") as "Info" | "Success" | "Warning" | "Danger",
-  // }));
-
-  // useEffect(() => {
-  //   if (!user) navigate("/signin");
-  // }, [user, navigate]);
-
-  // useEffect(() => {
-  //   fetchDashboard();
-  // }, [fetchDashboard]);
-
-  // if (!user || loading || !overviewData) return <p>Loading dashboard...</p>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
-      <PageMeta
-        title="Investor-DMS"
-        description="Investor Dashboard For DMS"
-      />
+      <PageMeta title="Investor-DMS" description="Investor Dashboard For DMS" />
       <div className="grid grid-cols-4 gap-4 md:gap-6">
         <div className="col-span-12 space-y-6 xl:col-span-12">
           <EcommerceMetrics
             data={{
-              totalEmployees: 0,
-              totalDepartments: 0,
-              todayAttendanceCount: 0,
+              totalEmployees: data?.investments.length ?? 0, // You can use investments count or any relevant metric
+              totalDepartments: data?.payouts.length ?? 0, // Similarly for payouts
+              todayAttendanceCount: data?.payouts?.length ?? 0, // Upcoming events as an example
               changes: {
-                employeeChange: 0,
-                departmentChange: 0,
-                attendanceChange: 0,
+                employeeChange: 10, 
+                departmentChange: -5, 
+                attendanceChange: 15, 
               },
             }}
           />

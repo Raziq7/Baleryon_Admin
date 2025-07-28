@@ -19,12 +19,13 @@ export async function verifyToken(req, res, next) {
       console.error("⛔ Invalid token:", err.message);
       return res.status(401).json({ message: "Invalid or expired token" });
     }
+console.log(decoded.id,"=============================");
 
     try {
       // : Fetch user from DB using ID from token
-      const user = await prisma.user.findUnique({
+      const user = await prisma.investor.findUnique({
         where: { id: decoded.id },
-        select: { id: true, name: true, email: true, role: true },
+        select: { id: true, name: true, email: true},
       });
 
       if (!user) {

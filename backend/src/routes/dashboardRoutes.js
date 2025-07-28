@@ -1,12 +1,19 @@
-
+// router/investorPortalRouter.js
 import express from "express";
-import { getDashboardOverview } from "../controller/dashboardController.js";
+import {
+  getInvestments,
+  getPayouts,
+  getUpcomingPayouts,  // New controller function
+} from "../controller/investment-details.controller.js";
 import { verifyToken } from "../middlewares/tokenVerification.js";
-import { checkRole } from "../middlewares/checkRole.js";
 
 const router = express.Router();
 
-router.get("/overview", verifyToken,
-  checkRole(["admin", "hr"]), getDashboardOverview);
+// Get investments of the logged-in investor
+router.get("/findInvestmentDetails", verifyToken, getInvestments);
+
+// Get payouts of the logged-in investor
+router.get("/payouts", verifyToken, getPayouts);
+
 
 export default router;
