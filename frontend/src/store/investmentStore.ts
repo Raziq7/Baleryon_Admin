@@ -16,7 +16,16 @@ export type InvestmentOpportunity = {
   exitOptions: string;
   payoutMode: string;
   isActive: boolean;
-  documents: string[];
+  investmentType: {
+    id: string;
+    name: string;
+    description: string;
+  }; // Add this field
+  businessCategory: {
+    id: string;
+    name: string;
+    description: string;
+  }; // Add this field
 };
 
 export type Payout = {
@@ -31,7 +40,7 @@ export type Payout = {
   status: string;
 };
 
-type Investment = {
+export type Investment = {
   id: string;
   investorId: string;
   opportunityId: string;

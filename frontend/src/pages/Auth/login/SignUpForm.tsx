@@ -9,7 +9,7 @@ import { useAuth } from "../../../utils/useAuth.ts";
 
 export default function SignUpForm() {
     const navigate = useNavigate();
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword] = useState(false);
 
     // Create states for each field in the sign up form
     const [name, setName] = useState("");

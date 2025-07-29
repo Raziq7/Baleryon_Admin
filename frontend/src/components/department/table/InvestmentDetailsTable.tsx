@@ -6,58 +6,58 @@ import {
   TableHeader,
   TableRow,
 } from "../../ui/table";
-import { useInvestmentStore } from "../../../store/investmentStore";
+import { useInvestmentStore, type Investment } from "../../../store/investmentStore";
 
-type InvestmentOpportunity = {
-  id: string;
-  name: string;
-  brandName: string;
-  description: string;
-  minAmount: number;
-  maxAmount: number | null;
-  roiPercent: number;
-  lockInMonths: number;
-  exitOptions: string;
-  payoutMode: string;
-  isActive: boolean;
-  investmentType: {
-    id: string;
-    name: string;
-    description: string;
-  };
-  businessCategory: {
-    id: string;
-    name: string;
-    description: string;
-  };
-};
+// type InvestmentOpportunity = {
+//   id: string;
+//   name: string;
+//   brandName: string;
+//   description: string;
+//   minAmount: number;
+//   maxAmount: number | null;
+//   roiPercent: number;
+//   lockInMonths: number;
+//   exitOptions: string;
+//   payoutMode: string;
+//   isActive: boolean;
+//   investmentType: {
+//     id: string;
+//     name: string;
+//     description: string;
+//   };
+//   businessCategory: {
+//     id: string;
+//     name: string;
+//     description: string;
+//   };
+// };
 
-type Payout = {
-  id: string;
-  amountDue: number;
-  amountPaid: number | null;
-  dueDate: string;
-  paidDate: string | null;
-  paymentMode: string;
-  receiptRef: string;
-  notes: string | null;
-  status: string;
-};
+// type Payout = {
+//   id: string;
+//   amountDue: number;
+//   amountPaid: number | null;
+//   dueDate: string;
+//   paidDate: string | null;
+//   paymentMode: string;
+//   receiptRef: string;
+//   notes: string | null;
+//   status: string;
+// };
 
-type Investment = {
-  id: string;
-  amount: number;
-  date: string;
-  roiPercent: number;
-  payoutMode: string;
-  contractStart: string;
-  contractEnd: string;
-  paymentMethod: string;
-  agreementSigned: boolean;
-  status: string;
-  opportunity: InvestmentOpportunity | null;
-  payouts: Payout[];
-};
+// type Investment = {
+//   id: string;
+//   amount: number;
+//   date: string;
+//   roiPercent: number;
+//   payoutMode: string;
+//   contractStart: string;
+//   contractEnd: string;
+//   paymentMethod: string;
+//   agreementSigned: boolean;
+//   status: string;
+//   opportunity: InvestmentOpportunity | null;
+//   payouts: Payout[];
+// };
 
 export default function InvestmentDetailsTable() {
   const [tableData, setTableData] = useState<Investment[]>([]);

@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
+import path from "path";
+
 
 import sanitizedConfig from "./config.js";
 
@@ -30,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 // Use raw parser for cdata
-app.use("/iclock/cdata.aspx", express.raw({ type: "*/*" }));
+// app.use("/iclock/cdata.aspx", express.raw({ type: "*/*" }));
 
 app.use((req, res, next) => {
   console.log(`--> [${req.method}] ${req.url}`);
@@ -46,52 +48,69 @@ app.use("/api/investor/", investmentDetailsRouter);
 //   res.send("OK");
 // });
 
-app.post("/iclock/cdata.aspx", express.raw({ type: "*/*" }), async (req, res) => {
-  const raw = req.body?.toString();
+// app.post("/iclock/cdata.aspx", express.raw({ type: "*/*" }), async (req, res) => {
+//   const raw = req.body?.toString();
 
-  if (!raw) return res.send("OK");
+//   if (!raw) return res.send("OK");
 
-  const rows = raw.trim().split("\n");
+//   const rows = raw.trim().split("\n");
 
-  console.log(rows, "Raw biometric logs");
+//   console.log(rows, "Raw biometric logs");
 
-  for (const row of rows) {
-    const fields = row.trim().split("\t");
+//   for (const row of rows) {
+//     const fields = row.trim().split("\t");
 
-    if (fields.length < 2) {
-      console.log(" Skipping invalid row:", row);
-      continue;
-    }
+//     if (fields.length < 2) {
+//       console.log(" Skipping invalid row:", row);
+//       continue;
+//     }
 
-    const [userId, time, verifyMode = "0"] = fields;
+//     const [userId, time, verifyMode = "0"] = fields;
 
-    const body = {
-      UserID: userId,
-      Time: time,
-      sn: req.query.SN ?? "UNKNOWN_SN",
-      VerifyMode: verifyMode,
-    };
+//     const body = {
+//       UserID: userId,
+//       Time: time,
+//       sn: req.query.SN ?? "UNKNOWN_SN",
+//       VerifyMode: verifyMode,
+//     };
 
-    console.log(body, " Parsed punch");
+//     console.log(body, " Parsed punch");
 
-    try {
-      await pushBiometricAttendance(
-        { body },
-        {
-          status: () => ({ json: () => { } }), // dummy response
-        }
-      );
-    } catch (err) {
-      console.log(" Push failed:", err.message);
-    }
+//     try {
+//       await pushBiometricAttendance(
+//         { body },
+//         {
+//           status: () => ({ json: () => { } }), // dummy response
+//         }
+//       );
+//     } catch (err) {
+//       console.log(" Push failed:", err.message);
+//     }
+//   }
+
+//   res.send("OK");
+// });
+
+// app.get("/", (req, res) => {
+//   res.send("API is running!");
+// });
+
+let dirname = path.resolve();
+
+if (sanitizedConfig.NODE_ENV === "production") {
+  try {
+    app.use(express.static(path.join(dirname, "../frontend", "dist")));
+
+    app.use((req, res) => {
+      res.sendFile(path.resolve(dirname, "../frontend", "dist", "index.html"));
+    });
+  } catch (error) {
+    console.log(
+      error,
+      "errorerrorerrorerrorerrorerrorerrorerrorerrorerrorerrorerror"
+    );
   }
-
-  res.send("OK");
-});
-
-app.get("/", (req, res) => {
-  res.send("API is running!");
-});
+}
 
 app.use(notFound);
 app.use(errorHandler);
