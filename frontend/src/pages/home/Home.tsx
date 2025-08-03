@@ -32,10 +32,14 @@ export default function Home() {
         <div className="col-span-12 space-y-6 xl:col-span-12">
           <EcommerceMetrics
             data={{
-              totalEmployees: data?.investments.length ?? 0, // You can use investments count or any relevant metric
-              totalDepartments: data?.payouts.length ?? 0, // Similarly for payouts
-              totalEarned: data?.totalEarned ?? 0, // Total earned
-              totalDueAmount: data?.totalDueAmount ?? 0, // Total due amount
+              totalEmployees: data?.investments.length ?? 0,
+              totalDepartments: data?.payouts.length ?? 0,
+              totalEarned: data?.totalEarned ?? 0,
+              totalDueAmount: data?.totalDueAmount ?? 0,
+              totalSales: data?.totalSales ?? 0, // Pass total sales data
+              lastSalesDate: data?.lastSalesDate ?? "N/A", // Pass last sales date
+              lastSalesAmount: data?.lastSalesAmount ?? 0, // Pass last sales amount
+              todaySalesAmount: data?.todaySalesAmount ?? 0, // Pass today's sales amount
               changes: {
                 employeeChange: 10,
                 departmentChange: -5,

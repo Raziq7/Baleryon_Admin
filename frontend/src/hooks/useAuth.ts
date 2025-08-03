@@ -14,7 +14,7 @@ export function useAuth() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
+    const storedToken = localStorage.getItem("auth_token");
 
     if (storedUser && storedToken) {
       try {
@@ -28,7 +28,7 @@ export function useAuth() {
 
   const login = (user: User, token: string) => {
     localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", token);
+    localStorage.setItem("auth_token", token);
     setUser(user);
     setToken(token);
   };
