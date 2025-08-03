@@ -1,7 +1,54 @@
-// services/investment-details.service.js
 import { prisma } from "../config/db.js";
 
-// Get all investments for a specific investor
+// Helper function to calculate total sales for a specific opportunity in a given month
+export const calculateTotalSales = async (opportunityId, month, year) => {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const findsales = await prisma.sales.findMany({
+    where: {
+      opportunityId,
+      date: {
+        gte: new Date(year, month - 1, 1),
+        lte: new Date(year, month - 1, daysInMonth),
+      },
+    },
+  });
+  return findsales.reduce((sum, sale) => sum + sale.amount, 0); // Sum the sales amounts
+};
+
+// Helper function to calculate today's sales for an opportunity
+export const calculateTodaysSales = async (opportunityId) => {
+  const today = new Date();
+  const startOfDay = new Date(today.setHours(0, 0, 0, 0)); // Start of today
+  const endOfDay = new Date(today.setHours(23, 59, 59, 999)); // End of today
+
+  const todaysSales = await prisma.sales.findMany({
+    where: {
+      opportunityId,
+      date: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+    },
+  });
+
+  return todaysSales.reduce((sum, sale) => sum + sale.amount, 0); // Sum the sales amounts
+};
+
+// Helper function to get the last sales for each opportunity
+export const getLastSale = async (opportunityId) => {
+  const lastSale = await prisma.sales.findFirst({
+    where: { opportunityId },
+    orderBy: { date: 'desc' },  // Fetch the most recent sale
+  });
+
+  if (!lastSale) return { lastSalesDate: null, lastSalesAmount: 0 };
+
+  return {
+    lastSalesDate: lastSale.date,
+    lastSalesAmount: lastSale.amount,
+  };
+};
+
 // Get all investments for a specific investor
 export const getInvestmentsService = async (userId) => {
   // Fetch investments and calculate total earnings and pending amount
@@ -27,23 +74,45 @@ export const getInvestmentsService = async (userId) => {
   const investmentsWithEarnings = investments.map((investment) => {
     // Calculate total amount paid (earnings)
     const totalPaid = investment.payouts.reduce(
-      (sum, payout) => sum + (payout.amountPaid || 0), // Sum amountPaid for each payout
+      (sum, payout) => sum + (payout.amountPaid || 0),
       0
     );
 
     // Calculate total pending amount (amountDue - amountPaid)
     const totalPending = investment.payouts.reduce(
-      (sum, payout) => sum + (payout.amountDue - (payout.amountPaid || 0)), // Calculate remaining amount
+      (sum, payout) => sum + (payout.amountDue - (payout.amountPaid || 0)),
       0
     );
 
-    // Add these totals to the investment object
     return {
       ...investment,
-      totalEarned: totalPaid, // Add total earned
-      totalPending: totalPending, // Add total pending
+      totalEarned: totalPaid,
+      totalPending: totalPending,
     };
   });
+
+  // Calculate total sales for each opportunity and add last sales date and amount
+  for (const investment of investmentsWithEarnings) {
+    const opportunityId = investment.opportunityId;
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1; // Months are 0-indexed
+    const currentYear = currentDate.getFullYear();
+
+    // Calculate daily sales for the opportunity
+    const totalSales = await calculateTotalSales(opportunityId, currentMonth, currentYear);
+    const todaysSales = await calculateTodaysSales(opportunityId);
+    
+
+
+    // Fetch last sales date and amount
+    const { lastSalesDate, lastSalesAmount } = await getLastSale(opportunityId);
+
+    investment.totalSales = totalSales;
+    investment.lastSalesDate = lastSalesDate;  // Add last sale date
+    investment.lastSalesAmount = lastSalesAmount;  // Add last sale amount
+    investment.todaySalesAmount = todaysSales; // Today's sales
+
+  }
 
   return investmentsWithEarnings;
 };
@@ -90,13 +159,12 @@ export const getUpcomingPayoutsService = async (userId) => {
   return upcomingPayouts;
 };
 
-
 // Get all investment opportunities that the logged-in investor hasn't invested in
 export const getNonInvestedOpportunitiesService = async (userId) => {
   // Fetch all investment opportunities
   const allOpportunities = await prisma.investmentOpportunity.findMany({
     where: {
-      isActive: true, 
+      isActive: true,
     },
   });
 
@@ -120,7 +188,30 @@ export const getNonInvestedOpportunitiesService = async (userId) => {
     (opportunity) => !investedOpportunityIds.includes(opportunity.id)
   );
 
-  console.log(nonInvestedOpportunities,"nonInvestedOpportunitiesnonInvestedOpportunitiesnonInvestedOpportunitiesnonInvestedOpportunities");
-  
   return nonInvestedOpportunities;
+};
+
+
+// Helper function to calculate total sales for a specific opportunity on a given day
+export const getDailySalesService = async (opportunityId, date) => {
+  try {
+    // Get the total sales for the opportunity on the given date
+    const sales = await prisma.sales.findMany({
+      where: {
+        opportunityId,
+        date: {
+          gte: new Date(date.setHours(0, 0, 0, 0)), // Start of the day
+          lte: new Date(date.setHours(23, 59, 59, 999)), // End of the day
+        },
+      },
+    });
+
+    // Calculate the total sales amount
+    const totalSales = sales.reduce((sum, sale) => sum + sale.amount, 0);
+    
+    return totalSales;
+  } catch (error) {
+    console.error("Failed to fetch daily sales:", error);
+    throw new Error("Failed to fetch daily sales");
+  }
 };

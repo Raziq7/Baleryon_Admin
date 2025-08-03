@@ -4,7 +4,8 @@ import {
   getInvestments,
   getPayouts,
   getUpcomingPayouts,
-  getNonInvestedOpportunities
+  getNonInvestedOpportunities,
+  
 } from "../controller/investment-details.controller.js";
 import { verifyToken } from "../middlewares/tokenVerification.js";
 
@@ -21,5 +22,8 @@ router.get("/upcomingPayouts", verifyToken, getUpcomingPayouts);
 
 // Get non-invested opportunities for the logged-in investor
 router.get("/nonInvestedOpportunities", verifyToken, getNonInvestedOpportunities);
+
+
+
 
 export default router;

@@ -5,8 +5,8 @@ import { getInvestmentsService, getPayoutsService } from "../services/dashboard.
 // @route   GET /api/dashboard/investments
 // @access  Private
 export const getInvestments = asyncHandler(async (req, res) => {
-  const userId = req.user.id;  // Get user ID from the token
-  const investments = await getInvestmentsService({ userID: userId });
+  const userId = req.user.id; // Get user ID from the token
+  const investments = await getInvestmentsService(userId);
   res.status(200).json({ success: true, data: investments });
 });
 

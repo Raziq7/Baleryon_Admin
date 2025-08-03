@@ -5,6 +5,7 @@ import {
   getPayoutsService,
   getUpcomingPayoutsService,
   getNonInvestedOpportunitiesService,
+  getDailySalesService
 } from "../services/investment-details.sevice.js";
 
 // Get all investments for the logged-in investor
@@ -35,4 +36,24 @@ export const getNonInvestedOpportunities = asyncHandler(async (req, res) => {
     userId
   );
   res.status(200).json({ success: true, data: nonInvestedOpportunities });
+});
+
+
+// Get daily sales for a specific opportunity
+export const getDailySales = asyncHandler(async (req, res) => {
+  const { opportunityId, date } = req.params;
+
+  if (!opportunityId || !date) {
+    return res.status(400).json({ success: false, message: "Missing required parameters." });
+  }
+
+  try {
+    // Fetch daily sales from the service
+    const totalSales = await getDailySalesService(opportunityId, new Date(date));
+
+    // Respond with the total sales for the given day
+    res.status(200).json({ success: true, totalSales });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
