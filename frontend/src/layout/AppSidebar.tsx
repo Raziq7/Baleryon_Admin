@@ -733,7 +733,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-            <div className="">
+            {/* <div className="">
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
                   !isExpanded && !isHovered
@@ -759,10 +759,10 @@ const AppSidebar: React.FC = () => {
                     />
                   </svg>
                 )}
-              </h2>
+              </h2> */}
               {/* others */}
-              {renderMenuItems(othersItems, "others")}
-            </div>
+              {/* {renderMenuItems(othersItems, "others")}
+            </div> */}
           </div>
         </nav>
       </div>

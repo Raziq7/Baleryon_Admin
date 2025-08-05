@@ -75,9 +75,9 @@ export default function EcommerceMetrics({ data }: Props) {
               {data.totalEmployees.toLocaleString()}
             </h4>
           </div>
-          <Badge color={getBadgeColor(data.changes?.employeeChange ?? 0)}>
+          {/* <Badge color={getBadgeColor(data.changes?.employeeChange ?? 0)}>
             {Math.abs(data.changes?.employeeChange ?? 0).toFixed(2)}%
-          </Badge>
+          </Badge> */}
         </div>
       </div>
 

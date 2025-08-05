@@ -118,9 +118,9 @@ const Header: React.FC = () => {
             </svg>
           </button>
 
-          <div className="hidden lg:block">
-            <form>
-              <div className="relative">
+          {/* <div className="hidden lg:block">
+            <form> */}
+              {/* <div className="relative">
                 <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
                   <svg
                     className="fill-gray-500 dark:fill-gray-400"
@@ -149,9 +149,9 @@ const Header: React.FC = () => {
                   <span> ⌘ </span>
                   <span> K </span>
                 </button>
-              </div>
-            </form>
-          </div>
+              </div> */}
+            {/* </form>
+          </div> */}
         </div>
         <div
           className={`${

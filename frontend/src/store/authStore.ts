@@ -18,7 +18,13 @@ type AuthState = {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   setToken: (token: string) => void;
-  signup: (email: string, password: string, phone: string, name: string, type: string) => Promise<void>;
+  signup: (
+    email: string,
+    password: string,
+    phone: string,
+    name: string,
+    type: string
+  ) => Promise<void>;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -35,6 +41,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       login: async (email: string, password: string) => {
+        console.log(password, "passwordddddddddd");
         set({ loading: true, error: null });
         try {
           console.log("Attempting to login with:", email, password);
@@ -55,11 +62,30 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      signup: async (email: string, password: string, phone: string, name: string, type: string) => {
+      signup: async (
+        email: string,
+        password: string,
+        phone: string,
+        name: string,
+        type: string
+      ) => {
         set({ loading: true, error: null });
         try {
-          console.log("Attempting to signup with:", email, password, phone, name, type);
-          const res = await api.post("/auth/register", { email, password, name, phone, type });
+          console.log(
+            "Attempting to signup with:",
+            email,
+            password,
+            phone,
+            name,
+            type
+          );
+          const res = await api.post("/auth/register", {
+            email,
+            password,
+            name,
+            phone,
+            type,
+          });
           const { token, user } = res.data; // your backend response
           localStorage.setItem("auth_token", token);
           localStorage.setItem("user", JSON.stringify(user));
