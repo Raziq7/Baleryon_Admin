@@ -1,4 +1,4 @@
-import Badge from "../ui/badge/Badge";
+// import Badge from "../ui/badge/Badge";
 
 type Overview = {
   totalEmployees: number;
@@ -20,10 +20,10 @@ type Props = {
   data: Overview;
 };
 
-const getBadgeColor = (
-  value: number
-): "success" | "error" | "warning" | "info" | undefined =>
-  value > 0 ? "success" : value < 0 ? "error" : "warning";
+// const getBadgeColor = (
+//   value: number
+// ): "success" | "error" | "warning" | "info" | undefined =>
+//   value > 0 ? "success" : value < 0 ? "error" : "warning";
 
 export default function EcommerceMetrics({ data }: Props) {
   // Function to format the last sales date
