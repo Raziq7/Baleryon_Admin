@@ -31,7 +31,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs }) => {
               "text-gray-500 dark:text-neutral-400",
               "hover:text-blue-600 dark:hover:text-white",
               activeTab === tab.id &&
-                "bg-gray-200 text-gray-800 dark:bg-neutral-700 dark:text-white"
+              "bg-gray-200 text-gray-800 dark:bg-neutral-700 dark:text-white"
             )}
             aria-selected={activeTab === tab.id}
             aria-controls={`tab-panel-${tab.id}`}
@@ -42,7 +42,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs }) => {
       </nav>
 
       <div className="mt-4">
-        {tabs.map((tab) => (
+        {/* {tabs.map((tab) => (
           <div
             key={tab.id}
             id={`tab-panel-${tab.id}`}
@@ -51,7 +51,9 @@ export const Tabs: React.FC<TabsProps> = ({ tabs }) => {
           >
             {tab.content}
           </div>
-        ))}
+        ))} */}
+        {tabs.find((tab) => tab.id === activeTab)?.content}
+
       </div>
     </div>
   );

@@ -62,6 +62,51 @@ const navItems: NavItem[] = [
     name: "Dashboard",
     path: "/",
   },
+  // {
+  //   icon: (
+  //     <svg
+  //       width="24"
+  //       height="24"
+  //       viewBox="0 0 24 24"
+  //       fill="none"
+  //       xmlns="http://www.w3.org/2000/svg"
+  //     >
+  //       <path
+  //         d="M3 21V5C3 4.44772 3.44772 4 4 4H20C20.5523 4 21 4.44772 21 5V21"
+  //         stroke="currentColor"
+  //         strokeWidth="1.5"
+  //         strokeLinecap="round"
+  //         strokeLinejoin="round"
+  //       />
+  //       <path
+  //         d="M3 10H21"
+  //         stroke="currentColor"
+  //         strokeWidth="1.5"
+  //         strokeLinecap="round"
+  //       />
+  //       <path
+  //         d="M7 14V18"
+  //         stroke="currentColor"
+  //         strokeWidth="1.5"
+  //         strokeLinecap="round"
+  //       />
+  //       <path
+  //         d="M12 14V18"
+  //         stroke="currentColor"
+  //         strokeWidth="1.5"
+  //         strokeLinecap="round"
+  //       />
+  //       <path
+  //         d="M17 14V18"
+  //         stroke="currentColor"
+  //         strokeWidth="1.5"
+  //         strokeLinecap="round"
+  //       />
+  //     </svg>
+  //   ),
+  //   name: "Investment Details",
+  //   path: "/investment-details",
+  // },
   {
     icon: (
       <svg
@@ -72,66 +117,37 @@ const navItems: NavItem[] = [
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M3 21V5C3 4.44772 3.44772 4 4 4H20C20.5523 4 21 4.44772 21 5V21"
+          d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M3 10H21"
+          d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M12 12V16"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
         />
         <path
-          d="M7 14V18"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M12 14V18"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M17 14V18"
+          d="M9 14H15"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
         />
       </svg>
     ),
-    name: "Investment Details",
-    path: "/investment-details",
+    name: "Product Management",
+    path: "/product-management",
   },
-  {
-    icon: (
-      <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* <!-- Rupee symbol --> */}
-      <path
-        d="M14 6H10.5C10.22 6 10 6.22 10 6.5C10 6.78 10.22 7 10.5 7H12.75C13.1642 7 13.5 7.33579 13.5 7.75C13.5 8.16421 13.1642 8.5 12.75 8.5H10.5C10.22 8.5 10 8.72 10 9C10 9.28 10.22 9.5 10.5 9.5H11.5C12.6046 9.5 13.5 10.3954 13.5 11.5V11.75C13.5 12.1642 13.1642 12.5 12.75 12.5C12.3358 12.5 12 12.1642 12 11.75V11.5C12 11.2239 11.7761 11 11.5 11H10.5C10.22 11 10 10.78 10 10.5C10 10.22 10.22 10 10.5 10H11.25C11.6642 10 12 9.66421 12 9.25C12 8.83579 11.6642 8.5 11.25 8.5H10.5C10.22 8.5 10 8.28 10 8C10 7.72 10.22 7.5 10.5 7.5H14C14.2761 7.5 14.5 7.27614 14.5 7C14.5 6.72386 14.2761 6.5 14 6.5V6Z"
-        fill="currentColor"
-      />
-      {/* <!-- Hand --> */}
-      <path
-        d="M3 15C3 13.3431 4.34315 12 6 12H13C13.5523 12 14 12.4477 14 13V14H17.5858C18.851 14 19.1054 15.1054 18.2929 15.7071L14.2929 18.7071C13.6834 19.0986 12.3166 19.0986 11.7071 18.7071L9.41421 17.2929C9.149 17.1054 8.89464 17 8.58579 17H6C4.34315 17 3 15.6569 3 14V15Z"
-        fill="currentColor"
-      />
-    </svg>
-    
-    ),
-    name: "Payouts",
-    path: "/investment-payouts",
-  },
+
   // {
   //   icon: (
   //     <svg
@@ -273,26 +289,183 @@ const navItems: NavItem[] = [
   //   name: "Payroll Management",
   //   path: "/payroll",
   // },
-  // {
-  //   name: "Forms",
-  //   icon: (
-  //     <svg
-  //       width="24"
-  //       height="24"
-  //       viewBox="0 0 24 24"
-  //       fill="none"
-  //       xmlns="http://www.w3.org/2000/svg"
-  //     >
-  //       <path
-  //         fillRule="evenodd"
-  //         clipRule="evenodd"
-  //         d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H18.5001C19.7427 20.75 20.7501 19.7426 20.7501 18.5V5.5C20.7501 4.25736 19.7427 3.25 18.5001 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H18.5001C18.9143 4.75 19.2501 5.08579 19.2501 5.5V18.5C19.2501 18.9142 18.9143 19.25 18.5001 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V5.5ZM6.25005 9.7143C6.25005 9.30008 6.58583 8.9643 7.00005 8.9643L17 8.96429C17.4143 8.96429 17.75 9.30008 17.75 9.71429C17.75 10.1285 17.4143 10.4643 17 10.4643L7.00005 10.4643C6.58583 10.4643 6.25005 10.1285 6.25005 9.7143ZM6.25005 14.2857C6.25005 13.8715 6.58583 13.5357 7.00005 13.5357H17C17.4143 13.5357 17.75 13.8715 17.75 14.2857C17.75 14.6999 17.4143 15.0357 17 15.0357H7.00005C6.58583 15.0357 6.25005 14.6999 6.25005 14.2857Z"
-  //         fill="currentColor"
-  //       />
-  //     </svg>
-  //   ),
-  //   subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  // },
+
+  {
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M20 21C20 17.134 16.4183 14 12 14C7.58172 14 4 17.134 4 21"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    ),
+    name: "User Management",
+    path: "/admin/users",
+  },
+
+  {
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4 7L12 3L20 7L12 11L4 7Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M4 7V17L12 21L20 17V7"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M12 11V21"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    ),
+    name: "Order Management",
+    path: "/order-management",
+  },
+  {
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Top box */}
+        <path
+          d="M4 7L12 3L20 7L12 11L4 7Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+
+        {/* Middle box */}
+        <path
+          d="M4 7V13L12 17L20 13V7"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+
+        {/* Bottom box */}
+        <path
+          d="M4 13V17L12 21L20 17V13"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+    name: "Inventory Management",
+    path: "/inventory-management",
+  },
+
+  {
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4 20H20"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M7 16V10"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M12 16V6"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M17 16V12"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    ),
+    name: "Report Management",
+    path: "/report-management",
+  },
+
+  {
+    name: "CMS",
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H18.5001C19.7427 20.75 20.7501 19.7426 20.7501 18.5V5.5C20.7501 4.25736 19.7427 3.25 18.5001 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H18.5001C18.9143 4.75 19.2501 5.08579 19.2501 5.5V18.5C19.2501 18.9142 18.9143 19.25 18.5001 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V5.5ZM6.25005 9.7143C6.25005 9.30008 6.58583 8.9643 7.00005 8.9643L17 8.96429C17.4143 8.96429 17.75 9.30008 17.75 9.71429C17.75 10.1285 17.4143 10.4643 17 10.4643L7.00005 10.4643C6.58583 10.4643 6.25005 10.1285 6.25005 9.7143ZM6.25005 14.2857C6.25005 13.8715 6.58583 13.5357 7.00005 13.5357H17C17.4143 13.5357 17.75 13.8715 17.75 14.2857C17.75 14.6999 17.4143 15.0357 17 15.0357H7.00005C6.58583 15.0357 6.25005 14.6999 6.25005 14.2857Z"
+          fill="currentColor"
+        />
+      </svg>
+    ),
+    subItems: [{ name: "Landing Page", path: "/cms/landing-page", pro: false }],
+  },
+  {
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M11.665 3.75618C11.8762 3.65061 12.1247 3.65061 12.3358 3.75618L18.7807 6.97853L12.3358 10.2009C12.1247 10.3064 11.8762 10.3064 11.665 10.2009L5.22014 6.97853L11.665 3.75618ZM4.29297 8.19199V16.0946C4.29297 16.3787 4.45347 16.6384 4.70757 16.7654L11.25 20.0365V11.6512C11.1631 11.6205 11.0777 11.5843 10.9942 11.5425L4.29297 8.19199ZM12.75 20.037L19.2933 16.7654C19.5474 16.6384 19.7079 16.3787 19.7079 16.0946V8.19199L13.0066 11.5425C12.9229 11.5844 12.8372 11.6207 12.75 11.6515V20.037ZM13.0066 2.41453C12.3732 2.09783 11.6277 2.09783 10.9942 2.41453L4.03676 5.89316C3.27449 6.27429 2.79297 7.05339 2.79297 7.90563V16.0946C2.79297 16.9468 3.27448 17.7259 4.03676 18.1071L10.9942 21.5857L11.3296 20.9149L10.9942 21.5857C11.6277 21.9024 12.3732 21.9024 13.0066 21.5857L19.9641 18.1071C20.7264 17.7259 21.2079 16.9468 21.2079 16.0946V7.90563C21.2079 7.05339 20.7264 6.27429 19.9641 5.89316L13.0066 2.41453Z"
+          fill="currentColor"
+        />
+      </svg>
+    ),
+    name: "Settings",
+    path: "/settings",
+  },
+
   // {
   //   name: "Tables",
   //   icon: (
@@ -401,7 +574,7 @@ const othersItems: NavItem[] = [
     ),
     name: "Settings",
     subItems: [
-      { name: "Region", path: "/settings", pro: false },
+      { name: "Category & Brand", path: "/settings", pro: false },
       // { name: "Avatar", path: "/avatars", pro: false },
       // { name: "Badge", path: "/badge", pro: false },
       // { name: "Buttons", path: "/buttons", pro: false },
@@ -447,14 +620,14 @@ const AppSidebar: React.FC = () => {
     index: number;
   } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
-    {}
+    {},
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
     (path: string) => location.pathname === path,
-    [location.pathname]
+    [location.pathname],
   );
 
   useEffect(() => {
@@ -658,8 +831,8 @@ const AppSidebar: React.FC = () => {
           isExpanded || isMobileOpen
             ? "w-[290px]"
             : isHovered
-            ? "w-[290px]"
-            : "w-[90px]"
+              ? "w-[290px]"
+              : "w-[90px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
@@ -676,25 +849,25 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/sidebar.png"
+                src="/baleryon_dragon_full.png"
                 alt="Logo"
-                width={60}
-                height={50}
+                width={100}
+                height={100}
               />
               <img
                 className="hidden dark:block"
-                src="/sidebar.png"
+                src="/baleryon_dragon_full.png"
                 alt="Logo"
                 width={150}
-                height={40}
+                height={100}
               />
             </>
           ) : (
             <img
-              src="/sidebar.png"
+              src="/baleryon_dragon_full.png"
               alt="Logo"
-              width={42}
-              height={52}
+              width={100}
+              height={100}
             />
           )}
         </Link>
@@ -760,8 +933,8 @@ const AppSidebar: React.FC = () => {
                   </svg>
                 )}
               </h2> */}
-              {/* others */}
-              {/* {renderMenuItems(othersItems, "others")}
+            {/* others */}
+            {/* {renderMenuItems(othersItems, "others")}
             </div> */}
           </div>
         </nav>

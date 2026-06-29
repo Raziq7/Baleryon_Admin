@@ -7,363 +7,533 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model ExecutiveAssignment {
-  associateId String
-  executiveId String
-  createdAt   DateTime @default(now())
-  associate   User     @relation("AssociateExec_Associate", fields: [associateId], references: [id], onDelete: Cascade)
-  executive   User     @relation("AssociateExec_Executive", fields: [executiveId], references: [id], onDelete: Cascade)
+model Role {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at")
+  users     User[]
 
-  @@id([associateId, executiveId])
+  @@map("roles")
 }
+
+// model User {
+//   id              String           @id @default(uuid()) @db.Uuid
+//   fullName        String           @map("full_name") @db.VarChar(150)
+//   email           String           @unique @db.VarChar(150)
+//   phone           String?          @unique @db.VarChar(20)
+//   passwordHash    String?          @map("password_hash")
+//   profileImage    String?          @map("profile_image")
+//   provider        AuthProvider     @default(local)
+//   providerId      String?          @map("provider_id")
+//   roleId          String?          @map("role_id") @db.Uuid
+//   isVerified      Boolean          @default(false) @map("is_verified")
+//   isBlocked       Boolean          @default(false) @map("is_blocked")
+//   lastLogin       DateTime?        @map("last_login")
+//   createdAt       DateTime         @default(now()) @map("created_at")
+//   updatedAt       DateTime         @updatedAt @map("updated_at")
+//   addresses       Address[]
+//   analyticsEvents AnalyticsEvent[]
+//   carts           Cart[]
+//   notifications   Notification[]
+//   orders          Order[]
+//   reviews         Review[]
+//   role            Role?            @relation(fields: [roleId], references: [id])
+//   wishlists       Wishlist[]
+
+//   @@map("users")
+// }
 
 model User {
-  id                             String                     @id @default(uuid())
-  UserID                         String?                    @unique
-  name                           String
-  email                          String                     @unique
-  password                       String
-  phone                          String?
-  image_url                      String?
-  designation                    String?
-  countryCode                    String?
-  roleId                         String?
-  branchId                       String?
-  userLevel                      UserLevel                  @default(ASSOCIATE)
-  administrateId                 String?
-  headId                         String?
-  managerId                      String?
-  salesTarget                    Float?                     @default(0)
-  salesAchieved                  Float?                     @default(0)
-  incentive                      Float?                     @default(0)
-  isActive                       Boolean                    @default(true)
-  isLogin                        Boolean                    @default(false)
-  isAdmin                        Boolean                    @default(false)
-  isHead                         Boolean                    @default(false)
-  isManager                      Boolean                    @default(false)
-  createdAt                      DateTime                   @default(now())
-  updatedAt                      DateTime                   @updatedAt
-  leadSuccessCoordinatorOf       BookingFormOfficeDetails[] @relation("LeadSuccessCoordinator")
-  partnerRelationshipExecutiveOf BookingFormOfficeDetails[] @relation("PartnerRelationshipExecutive")
-  salesOnboardingManagerOf       BookingFormOfficeDetails[] @relation("SalesOnboardingManager")
-  investments                    Investment[]               @relation("UserInvestments")
-  assignedInvestors              Investor[]
-  administrate                   User?                      @relation("UserAdministrate", fields: [administrateId], references: [id])
-  administrateTeam               User[]                     @relation("UserAdministrate")
-  branch                         Branch?                    @relation(fields: [branchId], references: [id])
-  executivesOfMe                 ExecutiveAssignment[]      @relation("AssociateExec_Executive") // I (Executive) have many associates
-  myExecutives                   ExecutiveAssignment[]      @relation("AssociateExec_Associate") // I (Associate) have many executives
+  id           String  @id @default(uuid()) @db.Uuid
+  fullName     String  @map("full_name") @db.VarChar(150)
+  email        String  @unique @db.VarChar(150)
+  phone        String? @unique @db.VarChar(20)
+  passwordHash String? @map("password_hash")
 
-  head         User?  @relation("UserHead", fields: [headId], references: [id])
-  headTeam     User[] @relation("UserHead")
-  manager      User?  @relation("UserManager", fields: [managerId], references: [id])
-  subordinates User[] @relation("UserManager")
-  role         Role?  @relation(fields: [roleId], references: [id])
+  profileImage String? @map("profile_image")
 
-  // 1-N relation: A user can have many BookingFormPersonalDetails
-  bookingFormDetails BookingFormPersonalDetails[]
+  provider   AuthProvider @default(local)
+  providerId String?      @map("provider_id")
+
+  roleId     String? @map("role_id") @db.Uuid
+  isVerified Boolean @default(false) @map("is_verified")
+  isBlocked  Boolean @default(false) @map("is_blocked")
+
+  lastLogin DateTime? @map("last_login")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  role Role? @relation(fields: [roleId], references: [id])
+
+  admin           Admin?
+  addresses       Address[]
+  carts           Cart[]
+  wishlists       Wishlist[]
+  orders          Order[]
+  reviews         Review[]
+  notifications   Notification[]
+  analyticsEvents AnalyticsEvent[]
+
+  @@map("users")
 }
 
-model Role {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  description String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  permissions RolePermission[]
-  users       User[]
+model Admin {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @unique @map("user_id") @db.Uuid
+
+  role AdminRole @default(SUPER_ADMIN)
+
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admins")
 }
 
-model Permission {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  description String?
-  roles       RolePermission[]
+model Address {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  fullName     String?  @map("full_name") @db.VarChar(150)
+  phone        String?  @db.VarChar(20)
+  addressLine1 String   @map("address_line_1")
+  addressLine2 String?  @map("address_line_2")
+  landmark     String?
+  city         String?  @db.VarChar(100)
+  state        String?  @db.VarChar(100)
+  country      String?  @db.VarChar(100)
+  postalCode   String?  @map("postal_code") @db.VarChar(20)
+  isDefault    Boolean  @default(false) @map("is_default")
+  createdAt    DateTime @default(now()) @map("created_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders       Order[]
+
+  @@map("addresses")
 }
 
-model RolePermission {
-  id           String     @id @default(uuid())
-  roleId       String
-  permissionId String
-  access       String?
-  permission   Permission @relation(fields: [permissionId], references: [id])
-  role         Role       @relation(fields: [roleId], references: [id])
+model Category {
+  id        String     @id @default(uuid()) @db.Uuid
+  name      String     @unique @db.VarChar(100)
+  slug      String     @unique @db.VarChar(120)
+  image     String?
+  parentId  String?    @map("parent_id") @db.Uuid
+  createdAt DateTime   @default(now()) @map("created_at")
+  parent    Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryHierarchy")
+  products  Product[]
 
-  @@unique([roleId, permissionId, access])
-}
-
-model Branch {
-  id                      String                     @id @default(uuid())
-  name                    String                     @unique
-  location                String?
-  createdAt               DateTime                   @default(now())
-  updatedAt               DateTime                   @updatedAt
-  officeDetails           BookingFormOfficeDetails[]
-  // investments             Investment[]
-  opportunityBranches     OpportunityBranch[]
-  users                   User[]
-  investmentOpportunities InvestmentOpportunity[]    @relation("OpportunityBranches")
+  @@map("categories")
 }
 
 model Brand {
-  id                    String                  @id
-  name                  String
-  description           String?
-  isActive              Boolean                 @default(true)
-  createdAt             DateTime                @default(now())
-  updatedAt             DateTime                @updatedAt
-  InvestmentOpportunity InvestmentOpportunity[]
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @unique @db.VarChar(100)
+  slug      String    @unique @db.VarChar(120)
+  logo      String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  products  Product[]
+
+  @@map("brands")
 }
 
-model Investor {
-  id                    String       @id @default(uuid())
-  name                  String
-  email                 String       @unique
-  phone                 String?
-  type                  String
-  address               String?
-  pan                   String?
-  aadhaar               String?
-  gstNumber             String?
-  referredBy            String?
-  status                String       @default("Pending")
-  password              String
-  relationshipManagerId String?
-  documents             String[]
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
-  investments           Investment[]
-  relationshipManager   User?        @relation(fields: [relationshipManagerId], references: [id])
+model Product {
+  id               String           @id @default(uuid()) @db.Uuid
+  categoryId       String?          @map("category_id") @db.Uuid
+  brandId          String?          @map("brand_id") @db.Uuid
+  title            String           @db.VarChar(255)
+  slug             String           @unique @db.VarChar(255)
+  shortDescription String?          @map("short_description")
+  description      String?
+  fabric           String?          @db.VarChar(100)
+  fit              String?          @db.VarChar(50)
+  gender           String?          @db.VarChar(20)
+  basePrice        Decimal          @map("base_price") @db.Decimal(10, 2)
+  salePrice        Decimal?         @map("sale_price") @db.Decimal(10, 2)
+  costPrice        Decimal?         @map("cost_price") @db.Decimal(10, 2)
+  isFeatured       Boolean          @default(false) @map("is_featured")
+  isActive         Boolean          @default(true) @map("is_active")
+  seoTitle         String?          @map("seo_title")
+  seoDescription   String?          @map("seo_description")
+  discountPercent  Decimal?         @map("discount_percent") @db.Decimal(5, 2)
+  note             String?
+  isReturnable     Boolean          @default(false) @map("is_returnable")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  orderItems       OrderItem[]
+  images           ProductImage[]
+  variants         ProductVariant[]
+  brand            Brand?           @relation(fields: [brandId], references: [id])
+  category         Category?        @relation(fields: [categoryId], references: [id])
+  reviews          Review[]
+  wishlists        Wishlist[]
+
+  @@index([slug])
+  @@map("products")
 }
 
-model InvestmentType {
-  id            String                  @id @default(uuid())
-  name          String                  @unique
-  description   String?
-  opportunities InvestmentOpportunity[]
+model ProductVariant {
+  id            String         @id @default(uuid()) @db.Uuid
+  productId     String         @map("product_id") @db.Uuid
+  sku           String         @unique @db.VarChar(100)
+  color         String?        @db.VarChar(50)
+  colorHex      String?        @map("color_hex") @db.VarChar(7)
+  size          String?        @db.VarChar(20)
+  stock         Int            @default(0)
+  price         Decimal?       @db.Decimal(10, 2)
+  salePrice     Decimal?       @map("sale_price") @db.Decimal(10, 2)
+  weight        Decimal?       @db.Decimal(10, 2)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  cartItems     CartItem[]
+  inventoryLogs InventoryLog[]
+  orderItems    OrderItem[]
+  images        ProductImage[]
+  product       Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("product_variants")
 }
 
-model BusinessCategory {
-  id            String                  @id @default(uuid())
-  name          String                  @unique
-  description   String?
-  opportunities InvestmentOpportunity[]
+model ProductImage {
+  id        String          @id @default(uuid()) @db.Uuid
+  productId String          @map("product_id") @db.Uuid
+  variantId String?         @map("variant_id") @db.Uuid
+  imageUrl  String          @map("image_url")
+  altText   String?         @map("alt_text")
+  isPrimary Boolean         @default(false) @map("is_primary")
+  sortOrder Int             @default(0) @map("sort_order")
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@map("product_images")
 }
 
-model InvestmentOpportunity {
-  id                     String              @id @default(uuid())
-  name                   String
-  brandName              String
-  brandId                String
-  description            String
-  minAmount              Float
-  maxAmount              Float?
-  roiPercent             Float
-  turnOverPercentage     Float?
-  turnOverAmount         Float?
-  renewalFee             Float?
-  lockInMonths           Int
-  exitOptions            String?
-  payoutMode             String
-  isActive               Boolean             @default(true)
-  documents              String[]
-  investmentTypeId       String
-  businessCategoryId     String
-  isMasterFranchise      Boolean             @default(false)
-  isSignature            Boolean             @default(false)
-  isStockist             Boolean?             @default(false)
-  signatureStoreLocation String?
-  investments            Investment[]
-  opportunityBranches    OpportunityBranch[]
-  sales                  Sales[]
-  territoryMasters       TerritoryMaster[]
-  brand                  Brand               @relation(fields: [brandId], references: [id])
-  businessCategory       BusinessCategory    @relation(fields: [businessCategoryId], references: [id])
-  investmentType         InvestmentType      @relation(fields: [investmentTypeId], references: [id])
-  territories            Territory[]
-  branches               Branch[]            @relation("OpportunityBranches")
+model InventoryLog {
+  id        String           @id @default(uuid()) @db.Uuid
+  variantId String           @map("variant_id") @db.Uuid
+  quantity  Int
+  type      InventoryLogType
+  note      String?
+  createdAt DateTime         @default(now()) @map("created_at")
+  variant   ProductVariant   @relation(fields: [variantId], references: [id])
 
-  @@map("investment_opportunities")
+  @@map("inventory_logs")
 }
 
-model TerritoryMaster {
-  id            String                @id @default(uuid())
-  opportunityId String
-  territoryId   String
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  opportunity   InvestmentOpportunity @relation(fields: [opportunityId], references: [id])
-  territory     Territory             @relation(fields: [territoryId], references: [id])
+model Cart {
+  id        String     @id @default(uuid()) @db.Uuid
+  userId    String     @map("user_id") @db.Uuid
+  createdAt DateTime   @default(now()) @map("created_at")
+  items     CartItem[]
+  user      User       @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("carts")
 }
 
-model OpportunityBranch {
-  id            String                @id @default(uuid())
-  opportunityId String
-  branchId      String
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  branch        Branch                @relation(fields: [branchId], references: [id])
-  opportunity   InvestmentOpportunity @relation(fields: [opportunityId], references: [id])
+model CartItem {
+  id        String         @id @default(uuid()) @db.Uuid
+  cartId    String         @map("cart_id") @db.Uuid
+  variantId String         @map("variant_id") @db.Uuid
+  quantity  Int            @default(1)
+  createdAt DateTime       @default(now()) @map("created_at")
+  cart      Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+
+  @@map("cart_items")
 }
 
-model Investment {
-  id              String                @id @default(uuid())
-  investorId      String
-  opportunityId   String
-  createdById     String?
-  amount          Float
-  date            DateTime
-  roiPercent      Float?
-  payoutMode      String
-  coolOffPeriod   DateTime?
-  contractStart   DateTime
-  contractEnd     DateTime
-  paymentMethod   String
-  agreementSigned Boolean               @default(false)
-  status          String                @default("Ongoing")
-  // branchId        String
-  // branch          Branch                @relation(fields: [branchId], references: [id])
-  createdBy       User?                 @relation("UserInvestments", fields: [createdById], references: [id])
-  investor        Investor              @relation(fields: [investorId], references: [id])
-  opportunity     InvestmentOpportunity @relation(fields: [opportunityId], references: [id])
-  payouts         Payout[]
+model Wishlist {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, productId])
+  @@map("wishlists")
 }
 
-model Payout {
-  id           String     @id @default(uuid())
-  investmentId String
-  dueDate      DateTime
-  amountDue    Float
-  amountPaid   Float?
-  paidDate     DateTime?
-  paymentMode  String?
-  receiptRef   String?
-  notes        String?
-  investment   Investment @relation(fields: [investmentId], references: [id])
+model Order {
+  id             String        @id @default(uuid()) @db.Uuid
+  userId         String        @map("user_id") @db.Uuid
+  orderNumber    String        @unique @map("order_number") @db.VarChar(50)
+  addressId      String?       @map("address_id") @db.Uuid
+  subtotal       Decimal?      @db.Decimal(10, 2)
+  discountAmount Decimal?      @map("discount_amount") @db.Decimal(10, 2)
+  shippingAmount Decimal?      @map("shipping_amount") @db.Decimal(10, 2)
+  totalAmount    Decimal?      @map("total_amount") @db.Decimal(10, 2)
+  paymentStatus  PaymentStatus @default(PENDING) @map("payment_status")
+  orderStatus    OrderStatus   @default(PENDING) @map("order_status")
+  paymentMethod  String?       @map("payment_method") @db.VarChar(50)
+  notes          String?
+  placedAt       DateTime      @default(now()) @map("placed_at")
+  items          OrderItem[]
+  address        Address?      @relation(fields: [addressId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
+  payments       Payment[]
+  shipments      Shipment[]
+
+  @@index([userId])
+  @@map("orders")
 }
 
-model Sales {
-  id            String                @id @default(uuid())
-  opportunityId String
-  amount        Float
-  date          DateTime
-  opportunity   InvestmentOpportunity @relation(fields: [opportunityId], references: [id])
+model OrderItem {
+  id          String          @id @default(uuid()) @db.Uuid
+  orderId     String          @map("order_id") @db.Uuid
+  productId   String?         @map("product_id") @db.Uuid
+  variantId   String?         @map("variant_id") @db.Uuid
+  productName String?         @map("product_name") @db.VarChar(255)
+  quantity    Int
+  unitPrice   Decimal         @map("unit_price") @db.Decimal(10, 2)
+  totalPrice  Decimal         @map("total_price") @db.Decimal(10, 2)
+  order       Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product?        @relation(fields: [productId], references: [id])
+  variant     ProductVariant? @relation(fields: [variantId], references: [id])
+  returns     OrderReturn[]
+
+  @@map("order_items")
 }
 
-model Territory {
-  id                         String                       @id @default(uuid())
-  assignmentType             String
-  location                   String?
-  pincode                    String?
-  city                       String?
-  imageUrl                   String?
-  createdAt                  DateTime                     @default(now())
-  updatedAt                  DateTime                     @updatedAt
-  investmentOpportunityId    String?
-  isBooked                   Boolean                      @default(false)
-  BookingFormPersonalDetails BookingFormPersonalDetails[]
-  territoryMasters           TerritoryMaster[]
-  InvestmentOpportunity      InvestmentOpportunity?       @relation(fields: [investmentOpportunityId], references: [id])
+model Payment {
+  id             String        @id @default(uuid()) @db.Uuid
+  orderId        String        @map("order_id") @db.Uuid
+  paymentGateway String?       @map("payment_gateway") @db.VarChar(50)
+  transactionId  String?       @map("transaction_id")
+  paymentStatus  PaymentStatus @default(PENDING) @map("payment_status")
+  amount         Decimal?      @db.Decimal(10, 2)
+  paidAt         DateTime?     @map("paid_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  order          Order         @relation(fields: [orderId], references: [id])
 
-  @@map("territories")
+  @@map("payments")
 }
 
-model BookingFormPersonalDetails {
-  id                              String                           @id @default(uuid())
-  userId                          String
-  user                            User                             @relation(fields: [userId], references: [id])
-  fullName                        String
-  email                           String
-  phoneNumber                     String
-  altPhoneNumber                  String?
-  territoryId                     String
-  state                           String?
-  district                        String?
-  city                            String?
-  streetAddress                   String?
-  pincode                         String? 
-  aadharFront                     String?
-  aadharFrontIsApproved           Boolean                          @default(false)
-  aadharBack                      String?
-  aadharBackIsApproved            Boolean                          @default(false)
-  panCard                         String?
-  panCardIsApproved               Boolean                          @default(false)
-  companyPan                      String?
-  companyPanIsApproved            Boolean                          @default(false)
-  gstNumber                       String?
-  addressProof                    String?
-  addressProofIsApproved          Boolean                          @default(false)
-  attachedImage                   String?
-  attachedImageIsApproved         Boolean                          @default(false)
-  oppurtunity                     String?
-  isPaymentCompleted              Boolean                          @default(false)
-  createdAt                       DateTime                         @default(now())
-  updatedAt                       DateTime                         @updatedAt
-  officeDetails                   BookingFormOfficeDetails?
-  paymentDetails                  BookingFormPaymentDetails?
-  territory                       Territory                        @relation(fields: [territoryId], references: [id])
-  expectedPaymentScheduledDetails ExpectedPaymentSceduledDetails[]
-  paymentScheduledDetails         PaymentSceduledDetails[]
+model Coupon {
+  id           String     @id @default(uuid()) @db.Uuid
+  code         String     @unique @db.VarChar(50)
+  type         CouponType
+  value        Decimal    @db.Decimal(10, 2)
+  minimumOrder Decimal?   @map("minimum_order") @db.Decimal(10, 2)
+  usageLimit   Int?       @map("usage_limit")
+  usedCount    Int        @default(0) @map("used_count")
+  startsAt     DateTime?  @map("starts_at")
+  expiresAt    DateTime?  @map("expires_at")
+  isActive     Boolean    @default(true) @map("is_active")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("coupons")
 }
 
-model BookingFormOfficeDetails {
-  id                             String                     @id @default(uuid())
-  officeBranchId                 String?
-  leadSuccessCoordinatorId       String?
-  partnerRelationshipExecutiveId String?
-  salesOnboardingManagerId       String?
-  leadSource                     String?
-  personalDetailsId              String                     @unique
-  leadSuccessCoordinator         User?                      @relation("LeadSuccessCoordinator", fields: [leadSuccessCoordinatorId], references: [id])
-  officeBranch                   Branch?                    @relation(fields: [officeBranchId], references: [id])
-  partnerRelationshipExecutive   User?                      @relation("PartnerRelationshipExecutive", fields: [partnerRelationshipExecutiveId], references: [id])
-  personalDetails                BookingFormPersonalDetails @relation(fields: [personalDetailsId], references: [id])
-  salesOnboardingManager         User?                      @relation("SalesOnboardingManager", fields: [salesOnboardingManagerId], references: [id])
+model Review {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  rating    Int
+  review    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+  @@map("reviews")
 }
 
-model BookingFormPaymentDetails {
-  id                   String                     @id @default(uuid())
-  dealAmount           Float?
-  tokenReceived        Float?
-  isTokenApproved      Boolean                    @default(false)
-  tokenDate            DateTime?
-  balanceDue           Float?
-  paymentProof         String?
-  modeOfPayment        String?
-  additionalCommitment String?
-  remarks              String?
-  personalDetailsId    String                     @unique
-  personalDetails      BookingFormPersonalDetails @relation(fields: [personalDetailsId], references: [id])
+model Shipment {
+  id      String @id @default(uuid()) @db.Uuid
+  orderId String @map("order_id") @db.Uuid
+
+  courierName String @default("Delhivery")
+
+  awbNumber  String? @map("awb_number")
+  shipmentId String? @map("shipment_id")
+
+  pickupId String? @map("pickup_id")
+
+  labelUrl   String? @map("label_url")
+  invoiceUrl String? @map("invoice_url")
+
+  status String @default("CREATED") // CREATED, PICKED_UP, IN_TRANSIT, DELIVERED, RTO
+
+  trackingUrl String?
+
+  rawResponse Json? @map("raw_response") // VERY IMPORTANT for debugging
+
+  shippedAt   DateTime? @map("shipped_at")
+  pickedAt    DateTime? @map("picked_at")
+  deliveredAt DateTime? @map("delivered_at")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
 }
 
-model PaymentSceduledDetails {
-  id                String                     @id @default(uuid())
-  date              DateTime?
-  amount            Float?
-  isAmountApproved  Boolean                    @default(false)
-  paymentProof      String
-  personalDetailsId String
-  personalDetails   BookingFormPersonalDetails @relation(fields: [personalDetailsId], references: [id])
+model OrderReturn {
+  id           String       @id @default(uuid()) @db.Uuid
+  orderItemId  String       @map("order_item_id") @db.Uuid
+  reason       String?
+  status       ReturnStatus @default(REQUESTED)
+  refundAmount Decimal?     @map("refund_amount") @db.Decimal(10, 2)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  orderItem    OrderItem    @relation(fields: [orderItemId], references: [id])
+
+  @@map("returns")
 }
 
-model ExpectedPaymentSceduledDetails {
-  id                String                     @id @default(uuid())
-  date              DateTime?
-  amount            Float?
-  personalDetailsId String
-  personalDetails   BookingFormPersonalDetails @relation(fields: [personalDetailsId], references: [id])
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  title     String?
+  message   String?
+  type      String?  @db.VarChar(50)
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
 }
 
-enum UserLevel {
-  ADMINISTRATE
-  HEAD
+model Banner {
+  id          String   @id @default(uuid()) @db.Uuid
+  imageUrl    String?  @map("image_url")
+  topContent  String?  @map("top_content")
+  mainContent String?  @map("main_content")
+  lastContent String?  @map("last_content")
+  shopNowLink String?  @map("shop_now_link") @db.VarChar(500)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("banners")
+}
+
+model LimitedSeason {
+  id                 String   @id @default(uuid()) @db.Uuid
+  mainContent        String?  @map("main_content")
+  description        String?
+  timeCountingHours  Int      @default(3) @map("time_counting_hours")
+  ctaLink            String?  @map("cta_link") @db.VarChar(500)
+  backgroundImageUrl String?  @map("background_image_url")
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@map("limited_seasons")
+}
+
+model UrbanStory {
+  id        String   @id @default(uuid()) @db.Uuid
+  category  String   @db.VarChar(255)
+  ctaLink   String?  @map("cta_link") @db.VarChar(500)
+  imageUrl  String?  @map("image_url")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("urban_stories")
+}
+
+model JoinCommunity {
+  id        String              @id @default(uuid()) @db.Uuid
+  email     String              @unique @db.VarChar(255)
+  status    JoinCommunityStatus @default(ADDED)
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @updatedAt @map("updated_at")
+
+  @@map("join_community")
+}
+
+model SeoPage {
+  id              String  @id @default(uuid()) @db.Uuid
+  pageSlug        String  @unique @map("page_slug") @db.VarChar(255)
+  metaTitle       String? @map("meta_title")
+  metaDescription String? @map("meta_description")
+  ogImage         String? @map("og_image")
+
+  @@map("seo_pages")
+}
+
+model AnalyticsEvent {
+  id        String             @id @default(uuid()) @db.Uuid
+  userId    String?            @map("user_id") @db.Uuid
+  eventName AnalyticsEventName @map("event_name")
+  metadata  Json?
+  createdAt DateTime           @default(now()) @map("created_at")
+  user      User?              @relation(fields: [userId], references: [id])
+
+  @@map("analytics_events")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
   MANAGER
-  EXECUTIVE
-  ASSOCIATE
+  PRODUCT_MANAGER
+  ORDER_MANAGER
 }
 
-enum AssignmentType {
-  MANUALLY
-  AUTOMATICALLY
-  USER
+enum AuthProvider {
+  local
+  google
+  facebook
+  phone
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum CouponType {
+  PERCENTAGE
+  FIXED
+}
+
+enum InventoryLogType {
+  PURCHASE
+  SALE
+  RETURN
+  DAMAGE
+  ADJUSTMENT
+}
+
+enum ReturnStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  REFUNDED
+  COMPLETED
+}
+
+enum AnalyticsEventName {
+  PRODUCT_VIEW
+  ADD_TO_CART
+  REMOVE_CART
+  CHECKOUT_STARTED
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+}
+
+enum JoinCommunityStatus {
+  ADDED
+  PENDING
+  INVALID
+  VALID
 }

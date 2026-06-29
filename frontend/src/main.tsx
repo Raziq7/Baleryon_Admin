@@ -2,6 +2,7 @@ import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "swiper/swiper-bundle.css";
+import "react-confirm-alert/src/react-confirm-alert.css";
 import { useThemeStore } from "../src/store/useThemeStore.tsx";
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 import "./index.css";

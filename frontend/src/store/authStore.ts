@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { api } from "../services/api";
 import axios from "axios";
+import { getErrorMessage } from "../utils/getErrorMessage";
 
 type User = {
   id: number;
@@ -23,7 +24,7 @@ type AuthState = {
     password: string,
     phone: string,
     name: string,
-    type: string
+    type: string,
   ) => Promise<void>;
 };
 
@@ -54,8 +55,10 @@ export const useAuthStore = create<AuthState>()(
           // api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         } catch (err: unknown) {
           if (axios.isAxiosError(err)) {
-            const errorMsg = err.response?.data?.error || "Login failed";
-            set({ error: errorMsg, loading: false });
+            set({
+              error: getErrorMessage(err),
+              loading: false,
+            });
           } else {
             set({ error: "An unexpected error occurred", loading: false });
           }
@@ -67,7 +70,7 @@ export const useAuthStore = create<AuthState>()(
         password: string,
         phone: string,
         name: string,
-        type: string
+        type: string,
       ) => {
         set({ loading: true, error: null });
         try {
@@ -77,7 +80,7 @@ export const useAuthStore = create<AuthState>()(
             password,
             phone,
             name,
-            type
+            type,
           );
           const res = await api.post("/auth/register", {
             email,
@@ -94,8 +97,10 @@ export const useAuthStore = create<AuthState>()(
           // api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         } catch (err: unknown) {
           if (axios.isAxiosError(err)) {
-            const errorMsg = err.response?.data?.error || "SignUp failed";
-            set({ error: errorMsg, loading: false });
+            set({
+              error: getErrorMessage(err),
+              loading: false,
+            });
           } else {
             set({ error: "An unexpected error occurred", loading: false });
           }
@@ -112,6 +117,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth",
       partialize: (state) => ({ token: state.token, user: state.userLoged }), // only persist these
-    }
-  )
+    },
+  ),
 );

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
+// import { Dropdown } from "../ui/dropdown/Dropdown";
+// import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import CountryMap from "./CountryMap";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 type Props = {
   data: { nationality: string; count: number }[];
@@ -10,15 +10,15 @@ type Props = {
 
 export default function DemographicCard({ data }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const navbar = useNavigate();
+  // const navbar = useNavigate();
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
   }
 
-  function closeDropdown() {
-    setIsOpen(false);
-  }
+  // function closeDropdown() {
+  //   setIsOpen(false);
+  // }
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
@@ -48,7 +48,7 @@ export default function DemographicCard({ data }: Props) {
               />
             </svg>
           </button>
-          <Dropdown
+          {/* <Dropdown
             isOpen={isOpen}
             onClose={closeDropdown}
             className="w-40 p-2"
@@ -59,7 +59,7 @@ export default function DemographicCard({ data }: Props) {
             >
               View More
             </DropdownItem>
-          </Dropdown>
+          </Dropdown> */}
         </div>
       </div>
 

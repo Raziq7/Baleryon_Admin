@@ -11,16 +11,16 @@ import type {
 import { Modal } from "../components/ui/modal";
 import { useModal } from "../hooks/useModal";
 import PageMeta from "../components/common/PageMeta";
-import { useSettingStore } from "../store/settingStore";
+// import { useSettingStore } from "../store/settingStore";
 import { useWorkforceStore } from "../store/workforceStore";
 import Input from "../components/input/InputField";
 import Label from "../components/form/Label";
-import Select from "../components/form/Select";
+// import Select from "../components/form/Select";
 import TextArea from "../components/input/TextArea";
 
 const Calendar = () => {
   const { fetchEvents, events, addEvent, updateEvent } = useWorkforceStore();
-  const { regions, fetchRegions } = useSettingStore();
+  // const { regions, fetchRegions } = useSettingStore();
   const calendarRef = useRef<FullCalendar>(null);
   const { isOpen, openModal, closeModal } = useModal();
 
@@ -38,8 +38,8 @@ const Calendar = () => {
 
   useEffect(() => {
     fetchEvents();
-    fetchRegions();
-  }, [fetchEvents, fetchRegions]);
+    // fetchRegions();
+  }, [fetchEvents]);
 
   const resetForm = () => {
     setForm({
@@ -322,14 +322,14 @@ const Calendar = () => {
 
           <div>
             <Label>Region (Optional)</Label>
-            <Select
-              options={regions.map((r) => ({ label: r.name, value: r.id }))}
+            {/* <Select
+              // options={regions.map((r) => ({ label: r.name, value: r.id }))}
               placeholder="Select Region"
               onChange={(val) =>
                 setForm((prev) => ({ ...prev, regionId: val as number }))
               }
               value={form.regionId}
-            />
+            /> */}
             {errors.regionId && (
               <p className="text-sm text-red-500">{errors.regionId}</p>
             )}

@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { api } from "../services/api";
 import axios from "axios";
-import type { Pagination } from "../types/paginationType";
 import type { EarningsSummaryRaw } from "../types/employeeType";
 
 // bank details
@@ -70,25 +69,7 @@ type Reference = {
   contact: string;
 };
 
-type Payroll = {
-  id?: number;
-  employeeId: number;
-  month: number;
-  year: number;
-  baseSalary: number;
-  hra: number;
-  otherAllowances?: number;
-  grossSalary?: number; // computed at backend
-  epf?: number;
-  esi?: number;
-  taxDeduction?: number;
-  totalDeductions?: number; // computed at backend
-  netPay?: number; // computed at backend
-  paymentDate?: string; // ISO format string
-  isPaid?: boolean;
-  remarks?: string;
-  employee?: Employee;
-};
+
 type Employee = {
   id: number;
   employeeUniqueId: string;
@@ -134,7 +115,6 @@ type Employee = {
   selectedEmployment?: Employment;
   selectedEmployee: Employee | null;
   references?: Reference[];
-  payrolls?: Payroll[];
   bankDetails?: BankDetail[];
 };
 
@@ -173,23 +153,10 @@ type EmployeeState = {
   addQualification: (data: Qualification) => Promise<void>;
   updateQualification: (id: number, data: Qualification) => Promise<void>;
 
-  payrolls: Payroll[];
-  selectedPayroll: Payroll | null;
-  bankDetails: BankDetail[];
-  allPayrolls: Payroll[];
-  payrollPagination: Pagination;
-  fetchPayrolls: (employeeId: number) => Promise<void>;
-  getPayrollById: (id: number) => Promise<void>;
-  addPayroll: (data: Payroll) => Promise<void>;
-  fetchAllPayrolls: (page?: number, limit?: number) => Promise<void>;
-  updatePayroll: (id: number, data: Payroll) => Promise<void>;
-  deletePayroll: (id: number) => Promise<void>;
+  
 
   // Bank details
-  addBankDetail: (data: Partial<BankDetail>) => Promise<void>;
   updateBankDetail: (id: number, data: Partial<BankDetail>) => Promise<void>;
-  fetchBankDetailsByEmployee: (employeeId: number) => Promise<void>;
-  deleteBankDetail: (id: number) => Promise<void>;
 
   earningsSummary: EarningsSummaryRaw[];
   fetchEarningsSummary: (employeeId: number) => Promise<void>;
@@ -441,126 +408,6 @@ export const useEmployeeStore = create<EmployeeState>()(
         }
       },
 
-      // Payroll
-
-      fetchPayrolls: async (employeeId) => {
-        // alert()
-        set({ loading: true, error: null });
-        try {
-          const token = localStorage.getItem("auth_token");
-          const res = await api.get(`/employee/payrolls/${employeeId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          set({ payrolls: res.data.payrolls, loading: false });
-        } catch (err) {
-          handleError(err, set);
-        }
-      },
-
-      getPayrollById: async (id) => {
-        set({ loading: true, error: null });
-        try {
-          const token = localStorage.getItem("auth_token");
-          const res = await api.get(`/employee/payroll/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          set({ selectedPayroll: res.data.payroll, loading: false });
-        } catch (err) {
-          handleError(err, set);
-        }
-      },
-
-      addPayroll: async (data: Payroll) => {
-        set({ loading: true, error: null });
-        try {
-          const token = localStorage.getItem("auth_token");
-
-          await api.post("/employee/payroll", data, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          // Refresh payroll list after adding (optional)
-          await useEmployeeStore.getState().fetchPayrolls(data.employeeId);
-        } catch (err) {
-          handleError(err, set);
-        }
-      },
-
-      fetchAllPayrolls: async (page = 1, limit = 10) => {
-        set({ loading: true, error: null });
-        try {
-          const token = localStorage.getItem("auth_token");
-
-          const response = await api.get(
-            `/employee/allpayroll/${page}/${limit}`,
-            {
-              // params: { page, limit },
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-
-          const { payrolls, pagination } = response.data;
-
-          set({
-            allPayrolls: payrolls,
-            payrollPagination: pagination,
-            loading: false,
-          });
-        } catch (err) {
-          console.log(err, "Error fetching all payrolls");
-          handleError(err, set);
-        }
-      },
-
-      updatePayroll: async (id, data) => {
-        set({ loading: true, error: null });
-        try {
-          const token = localStorage.getItem("auth_token");
-          await api.put(`/employee/payroll/${id}`, data, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          await useEmployeeStore.getState().fetchPayrolls(data.employeeId);
-        } catch (err) {
-          handleError(err, set);
-        }
-      },
-
-      deletePayroll: async (id) => {
-        set({ loading: true, error: null });
-        try {
-          const token = localStorage.getItem("auth_token");
-          await api.delete(`/employee/payroll/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          set((state) => ({
-            payrolls: state.payrolls.filter((p) => p.id !== id),
-            loading: false,
-          }));
-        } catch (err) {
-          handleError(err, set);
-        }
-      },
-
-      // Bank Details
-      // Bank Details
-      addBankDetail: async (data) => {
-        set({ loading: true, error: null });
-        try {
-          const token = localStorage.getItem("auth_token");
-          await api.post("/employee/bank", data, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          if (data.employeeId) {
-            await useEmployeeStore
-              .getState()
-              .fetchBankDetailsByEmployee(data.employeeId);
-          }
-        } catch (err) {
-          handleError(err, set);
-        }
-      },
 
       updateBankDetail: async (id, data) => {
         set({ loading: true, error: null });
@@ -573,45 +420,17 @@ export const useEmployeeStore = create<EmployeeState>()(
           if (data.employeeId) {
             await useEmployeeStore
               .getState()
-              .fetchBankDetailsByEmployee(data.employeeId);
+              
           }
         } catch (err) {
           handleError(err, set);
         }
       },
 
-      fetchBankDetailsByEmployee: async (employeeId) => {
-        set({ loading: true, error: null });
-        try {
-          const token = localStorage.getItem("auth_token");
-          const res = await api.get(`/employee/bank/employee/${employeeId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+    
+       
 
-          set({ bankDetails: res.data, loading: false });
-        } catch (err) {
-          handleError(err, set);
-        }
-      },
-
-      deleteBankDetail: async (id) => {
-        set({ loading: true, error: null });
-        try {
-          const token = localStorage.getItem("auth_token");
-          await api.delete(`/employee/bank-detail/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          const employeeId = useEmployeeStore.getState().selectedEmployee?.id;
-          if (employeeId) {
-            await useEmployeeStore
-              .getState()
-              .fetchBankDetailsByEmployee(employeeId);
-          }
-        } catch (err) {
-          handleError(err, set);
-        }
-      },
+     
 
       fetchEarningsSummary: async (employeeId) => {
         set({ loading: true, error: null });

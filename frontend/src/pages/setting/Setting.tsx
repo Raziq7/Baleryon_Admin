@@ -1,26 +1,32 @@
 import { Tabs } from "../../components/ui/tab/Tabs";
-import ListRegion from "../../components/region/Region";
-import ListHolidayType from "../../components/holidayType/ListHolidayType";
+import ListCategory from "../../components/category/ListCategory";
+import ListBrand from "../../components/brand/ListBrand";
+import Coupon from "../../components/coupon/Coupon.tsx";
+
 
 function Setting() {
   return (
     <>
-      {/* <div className="max-w-5xl p-6 mx-auto bg-white rounded-2xl dark:bg-gray-900"> */}
       <Tabs
         tabs={[
           {
-            id: "tab1",
-            label: "Region",
-            content: <ListRegion />,
+            id: "categories",
+            label: "Category",
+            content: <ListCategory />,
           },
           {
-            id: "tab2",
-            label: "Holiday Type",
-            content: <ListHolidayType />,
+            id: "brands",
+            label: "Brand",
+            content: <ListBrand />,
+          },
+
+            {
+            id: "coupon",
+            label: "Coupon",
+            content: <Coupon />,
           },
         ]}
       />
-      {/* </div> */}
     </>
   );
 }

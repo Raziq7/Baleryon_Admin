@@ -8,7 +8,7 @@ type Overview = {
   totalSales: number;
   lastSalesDate: string; // Add lastSalesDate
   lastSalesAmount: number; // Add lastSalesAmount
-  todaySalesAmount:number;
+  todaySalesAmount: number;
   changes?: {
     employeeChange: number;
     departmentChange: number;
@@ -30,7 +30,7 @@ export default function EcommerceMetrics({ data }: Props) {
   const formatDate = (date: string): string => {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString("en-US", {
-      weekday: 'short', 
+      weekday: 'short',
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -106,7 +106,7 @@ export default function EcommerceMetrics({ data }: Props) {
               Total Sales
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-             {data.totalSales.toLocaleString()}
+              {data.totalSales.toLocaleString()}
             </h4>
           </div>
         </div>
