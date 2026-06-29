@@ -23,6 +23,7 @@ export interface UserDetails {
   email: string;
   phone: string | null;
   profileImage: string | null;
+  image?: string | null;
   provider: string;
   isVerified: boolean;
   isBlocked: boolean;

@@ -17,7 +17,7 @@ export default function AddBannerForm({ onClose }: Props) {
     shopNowLink: "",
   });
   const [image, setImage] = useState<File | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  // const [errors, setErrors] = useState<Record<string, string>>({});
 
   const imagePreview = useMemo(
     () => (image ? URL.createObjectURL(image) : null),
@@ -103,8 +103,8 @@ export default function AddBannerForm({ onClose }: Props) {
               placeholder="/products/123 or https://..."
               value={form.shopNowLink}
               onChange={handleChange}
-              error={!!errors.shopNowLink}
-              hint={errors.shopNowLink || ""}
+              // error={!!errors.shopNowLink}
+              // hint={errors.shopNowLink || ""}
             />
           </div>
         </div>
