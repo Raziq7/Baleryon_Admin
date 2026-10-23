@@ -37,6 +37,7 @@ export default function CategoryTable({ openModal }: CategoryTableProps) {
   useEffect(() => {
     const formatted: CategoryRow[] = categories.map((item) => ({
       ...item,
+      parentName: item.parentName || "—",
       productCount: item.productCount ?? 0,
       image: item.image ? (
         <img
@@ -79,6 +80,7 @@ export default function CategoryTable({ openModal }: CategoryTableProps) {
     { key: "image", label: "Image" },
     { key: "name", label: "Category Name" },
     { key: "slug", label: "Slug" },
+    { key: "parentName", label: "Parent Category" },
     { key: "productCount", label: "Products" },
     { key: "action", label: "Action", isAction: true },
   ];

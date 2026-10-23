@@ -35,6 +35,7 @@ export type Product = {
   description: string;
   price: number;
   discount?: number;
+  purchaseAmount?: number | null;
   category: ProductCategory | string;
   brand?: ProductBrand | null;
   note?: string;
@@ -43,6 +44,8 @@ export type Product = {
   colors?: ProductColor[];
   productDetails?: string;
   isReturn?: boolean;
+  isNewArrival?: boolean;
+  isBestSeller?: boolean;
   reviews?: ProductReview[];
   image: string[] | Record<string, unknown>;
   productImages?: ProductImageRecord[];

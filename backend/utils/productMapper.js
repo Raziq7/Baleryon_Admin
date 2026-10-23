@@ -10,6 +10,7 @@ export function toLegacyProduct(product) {
   const basePrice = decimalToNumber(product.basePrice) ?? 0;
   const salePrice = decimalToNumber(product.salePrice);
   const discountPercent = decimalToNumber(product.discountPercent);
+  const costPrice = decimalToNumber(product.costPrice);
 
   let discount = discountPercent;
   if (discount == null && salePrice != null && basePrice > 0) {
@@ -48,6 +49,7 @@ export function toLegacyProduct(product) {
     description: product.description || "",
     price: basePrice,
     discount: discount ?? 0,
+    purchaseAmount: costPrice,
     category: product.category
       ? { id: product.category.id, name: product.category.name }
       : { name: "" },
@@ -58,8 +60,10 @@ export function toLegacyProduct(product) {
     sizes: Array.from(sizeMap.values()),
     color: defaultColor,
     colors: productColors,
-    productDetails: product.description || "",
+    productDetails: product.productDetails || "",
     isReturn: product.isReturnable ?? false,
+    isNewArrival: product.isNewArrival ?? false,
+    isBestSeller: product.isBestSeller ?? false,
     image: (product.images || []).map((img) => img.imageUrl),
     productImages: (product.images || []).map((img) => ({
       id: img.id,

@@ -357,6 +357,34 @@ const navItems: NavItem[] = [
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        <path
+          d="M4 7H16M16 7L12 3M16 7L12 11"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M20 17H8M8 17L12 13M8 17L12 21"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+    name: "Exchange Requests",
+    path: "/exchange-requests",
+  },
+  {
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         {/* Top box */}
         <path
           d="M4 7L12 3L20 7L12 11L4 7Z"

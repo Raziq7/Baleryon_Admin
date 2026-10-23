@@ -154,10 +154,27 @@ export const updateOrderStatusController = asyncHandler(
     const { id } = req.params;
     const { orderStatus } = req.body;
 
+    // Stamp deliveredAt the first time an order is marked DELIVERED. This
+    // is the source of truth the exchange/replacement eligibility window
+    // (server/controller/exchangeController.js) counts down from, so it
+    // must only ever be set once -- a later status change (e.g. re-opening
+    // to CANCELLED and back) must not reset the customer's exchange clock.
+    let deliveredAtUpdate = {};
+    if (orderStatus === "DELIVERED") {
+      const existing = await prisma.order.findUnique({
+        where: { id },
+        select: { deliveredAt: true },
+      });
+      if (existing && !existing.deliveredAt) {
+        deliveredAtUpdate = { deliveredAt: new Date() };
+      }
+    }
+
     const order = await prisma.order.update({
       where: { id },
       data: {
         orderStatus,
+        ...deliveredAtUpdate,
       },
     });
 

@@ -10,6 +10,7 @@ import {
 } from "../ui/table";
 import Button from "../ui/button/Button";
 import PaginationControls from "../ui/pagination/PaginationControls";
+import { InlineLoader } from "../common/Loader";
 
 export default function OrderTable() {
   const navigate = useNavigate();
@@ -80,8 +81,8 @@ const getPaymentColor = (status: string) => {
     {/* Loading */}
     {loading && (
       <div className="p-8 text-center">
-        <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
-        <p className="text-gray-500">Loading orders...</p>
+        <InlineLoader size={36} className="flex-col" />
+        <p className="mt-2 text-gray-500">Loading orders...</p>
       </div>
     )}
 
@@ -163,14 +164,27 @@ const getPaymentColor = (status: string) => {
 
               {/* Payment */}
               <TableCell className="px-5 py-4">
-                <span
-                  className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${getPaymentColor(
-                    order.paymentStatus
-                  )}`}
-                >
-                  <span className="h-2 w-2 rounded-full bg-current"></span>
-                  {order.paymentStatus}
-                </span>
+                <div className="flex flex-col items-start gap-1">
+                  <span
+                    className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${getPaymentColor(
+                      order.paymentStatus
+                    )}`}
+                  >
+                    <span className="h-2 w-2 rounded-full bg-current"></span>
+                    {order.paymentStatus}
+                  </span>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                      order.paymentMethod?.toLowerCase() === "cod"
+                        ? "bg-orange-50 text-orange-700 border border-orange-200"
+                        : "bg-gray-50 text-gray-600 border border-gray-200"
+                    }`}
+                  >
+                    {order.paymentMethod?.toLowerCase() === "cod"
+                      ? "COD"
+                      : "Prepaid"}
+                  </span>
+                </div>
               </TableCell>
 
               {/* Status */}

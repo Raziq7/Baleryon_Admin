@@ -6,11 +6,19 @@ import Label from "../form/Label";
 import { useCatalogStore } from "../../store/catalogStore";
 import ComponentCard from "../common/ComponentCard";
 
+const selectClassName =
+  "w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90";
+
 export default function AddCategoryForm() {
   const { closeModal } = useModal();
-  const { addCategory, error } = useCatalogStore();
+  const { categories, addCategory, error, fetchCategories } =
+    useCatalogStore();
 
-  const [form, setForm] = useState({ name: "" });
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const [form, setForm] = useState({ name: "", parentId: "" });
   const [image, setImage] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -25,7 +33,9 @@ export default function AddCategoryForm() {
     };
   }, [imagePreview]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -50,6 +60,7 @@ export default function AddCategoryForm() {
 
     const formData = new FormData();
     formData.append("name", form.name.trim());
+    if (form.parentId) formData.append("parentId", form.parentId);
     if (image) formData.append("image", image);
 
     try {
@@ -79,6 +90,23 @@ export default function AddCategoryForm() {
               error={!!errors.name}
               hint={errors.name || ""}
             />
+          </div>
+
+          <div>
+            <Label>Parent Category (optional)</Label>
+            <select
+              name="parentId"
+              value={form.parentId}
+              onChange={handleChange}
+              className={selectClassName}
+            >
+              <option value="">None (top-level category)</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

@@ -13,6 +13,7 @@ import {
 import { getColorHex } from "../../constants/productColors";
 import { confirmAlert } from "react-confirm-alert";
 import ProductReviews from "./ProductReviews";
+import { InlineLoader } from "../../components/common/Loader";
 
 export default function ViewProduct() {
   const { id } = useParams<{ id: string }>();
@@ -112,7 +113,7 @@ export default function ViewProduct() {
       </div>
       <ComponentCard title="Product Details">
         {loading && !product && (
-          <p className="text-sm text-gray-500">Loading...</p>
+          <InlineLoader size={20} label="Loading..." />
         )}
 
         {error && <p className="text-sm text-error-500">{error}</p>}

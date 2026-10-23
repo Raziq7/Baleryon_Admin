@@ -17,7 +17,7 @@ import {
 export const getCategoriesController = asyncHandler(async (req, res) => {
   const categories = await prisma.category.findMany({
     orderBy: { name: "asc" },
-    include: { _count: { select: { products: true } } },
+    include: { _count: { select: { products: true } }, parent: true },
   });
 
   res.status(200).json({
@@ -27,6 +27,7 @@ export const getCategoriesController = asyncHandler(async (req, res) => {
       slug: c.slug,
       image: c.image,
       parentId: c.parentId,
+      parentName: c.parent?.name ?? null,
       productCount: c._count.products,
       createdAt: c.createdAt,
     })),
@@ -75,10 +76,16 @@ export const createCategoryController = asyncHandler(async (req, res) => {
 
 export const updateCategoryController = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name, parentId } = req.body;
 
   if (!name?.trim()) {
     return res.status(400).json({ message: "Category name is required" });
+  }
+
+  if (parentId === id) {
+    return res
+      .status(400)
+      .json({ message: "A category cannot be its own parent" });
   }
 
   const existing = await prisma.category.findUnique({ where: { id } });
@@ -107,6 +114,9 @@ export const updateCategoryController = asyncHandler(async (req, res) => {
   const updateData = { name: name.trim(), slug };
   if (imageUrl !== undefined) {
     updateData.image = imageUrl;
+  }
+  if (parentId !== undefined) {
+    updateData.parentId = parentId || null;
   }
 
   try {

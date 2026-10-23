@@ -13,6 +13,7 @@ import catalogRouter from "./routes/catalogRouter.js";
 import cmsRouter from "./routes/cmsRouter.js";
 import orderRouter from "./routes/orderRoutes.js";
 import shipmentRouter from "./routes/shipmentRouter.js";
+import exchangeRouter from "./routes/exchangeRoutes.js";
 import reportRouter from "./routes/reportRoutes.js";
 import inventoryRouter from "./routes/inventoryRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
@@ -51,6 +52,7 @@ app.use("/api/admin/catalog/", catalogRouter);
 app.use("/api/admin/cms/", cmsRouter);
 app.use("/api/admin/order", orderRouter);
 app.use("/api/admin/shipment/", shipmentRouter);
+app.use("/api/admin/exchange", exchangeRouter);
 app.use("/api/admin/reports/", reportRouter);
 app.use("/api/admin/inventory", inventoryRouter);
 app.use("/api/admin/coupons", couponRoutes);
@@ -68,5 +70,5 @@ app.get("/", (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = sanitizedConfig.PORT || 8000;
+const PORT = sanitizedConfig.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

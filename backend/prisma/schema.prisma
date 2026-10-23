@@ -16,79 +16,42 @@ model Role {
   @@map("roles")
 }
 
-// model User {
-//   id              String           @id @default(uuid()) @db.Uuid
-//   fullName        String           @map("full_name") @db.VarChar(150)
-//   email           String           @unique @db.VarChar(150)
-//   phone           String?          @unique @db.VarChar(20)
-//   passwordHash    String?          @map("password_hash")
-//   profileImage    String?          @map("profile_image")
-//   provider        AuthProvider     @default(local)
-//   providerId      String?          @map("provider_id")
-//   roleId          String?          @map("role_id") @db.Uuid
-//   isVerified      Boolean          @default(false) @map("is_verified")
-//   isBlocked       Boolean          @default(false) @map("is_blocked")
-//   lastLogin       DateTime?        @map("last_login")
-//   createdAt       DateTime         @default(now()) @map("created_at")
-//   updatedAt       DateTime         @updatedAt @map("updated_at")
-//   addresses       Address[]
-//   analyticsEvents AnalyticsEvent[]
-//   carts           Cart[]
-//   notifications   Notification[]
-//   orders          Order[]
-//   reviews         Review[]
-//   role            Role?            @relation(fields: [roleId], references: [id])
-//   wishlists       Wishlist[]
-
-//   @@map("users")
-// }
-
 model User {
-  id           String  @id @default(uuid()) @db.Uuid
-  fullName     String  @map("full_name") @db.VarChar(150)
-  email        String  @unique @db.VarChar(150)
-  phone        String? @unique @db.VarChar(20)
-  passwordHash String? @map("password_hash")
-
-  profileImage String? @map("profile_image")
-
-  provider   AuthProvider @default(local)
-  providerId String?      @map("provider_id")
-
-  roleId     String? @map("role_id") @db.Uuid
-  isVerified Boolean @default(false) @map("is_verified")
-  isBlocked  Boolean @default(false) @map("is_blocked")
-
-  lastLogin DateTime? @map("last_login")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-
-  role Role? @relation(fields: [roleId], references: [id])
-
-  admin           Admin?
+  id              String           @id @default(uuid()) @db.Uuid
+  fullName        String           @map("full_name") @db.VarChar(150)
+  email           String           @unique @db.VarChar(150)
+  phone           String?          @unique @db.VarChar(20)
+  passwordHash    String?          @map("password_hash")
+  profileImage    String?          @map("profile_image")
+  provider        AuthProvider     @default(local)
+  providerId      String?          @map("provider_id")
+  roleId          String?          @map("role_id") @db.Uuid
+  isVerified      Boolean          @default(false) @map("is_verified")
+  isBlocked       Boolean          @default(false) @map("is_blocked")
+  lastLogin       DateTime?        @map("last_login")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
   addresses       Address[]
+  admin           Admin?
+  analyticsEvents AnalyticsEvent[]
   carts           Cart[]
-  wishlists       Wishlist[]
+  notifications   Notification[]
   orders          Order[]
   reviews         Review[]
-  notifications   Notification[]
-  analyticsEvents AnalyticsEvent[]
+  role            Role?            @relation(fields: [roleId], references: [id])
+  wishlists       Wishlist[]
 
   @@map("users")
 }
 
 model Admin {
-  id     String @id @default(uuid()) @db.Uuid
-  userId String @unique @map("user_id") @db.Uuid
-
-  role AdminRole @default(SUPER_ADMIN)
-
-  isActive Boolean @default(true) @map("is_active")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @unique @map("user_id") @db.Uuid
+  role      AdminRole @default(SUPER_ADMIN)
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("admins")
 }
@@ -146,6 +109,7 @@ model Product {
   slug             String           @unique @db.VarChar(255)
   shortDescription String?          @map("short_description")
   description      String?
+  productDetails   String?          @map("product_details")
   fabric           String?          @db.VarChar(100)
   fit              String?          @db.VarChar(50)
   gender           String?          @db.VarChar(20)
@@ -159,6 +123,8 @@ model Product {
   discountPercent  Decimal?         @map("discount_percent") @db.Decimal(5, 2)
   note             String?
   isReturnable     Boolean          @default(false) @map("is_returnable")
+  isNewArrival     Boolean          @default(false) @map("is_new_arrival")
+  isBestSeller     Boolean          @default(false) @map("is_best_seller")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
   orderItems       OrderItem[]
@@ -184,6 +150,7 @@ model ProductVariant {
   price         Decimal?       @db.Decimal(10, 2)
   salePrice     Decimal?       @map("sale_price") @db.Decimal(10, 2)
   weight        Decimal?       @db.Decimal(10, 2)
+  isActive      Boolean        @default(true) @map("is_active")
   createdAt     DateTime       @default(now()) @map("created_at")
   cartItems     CartItem[]
   inventoryLogs InventoryLog[]
@@ -270,11 +237,12 @@ model Order {
   paymentMethod  String?       @map("payment_method") @db.VarChar(50)
   notes          String?
   placedAt       DateTime      @default(now()) @map("placed_at")
+  deliveredAt    DateTime?     @map("delivered_at")
+  shipments      Shipment[]
   items          OrderItem[]
   address        Address?      @relation(fields: [addressId], references: [id])
   user           User          @relation(fields: [userId], references: [id])
   payments       Payment[]
-  shipments      Shipment[]
 
   @@index([userId])
   @@map("orders")
@@ -322,9 +290,8 @@ model Coupon {
   startsAt     DateTime?  @map("starts_at")
   expiresAt    DateTime?  @map("expires_at")
   isActive     Boolean    @default(true) @map("is_active")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
 
   @@map("coupons")
 }
@@ -344,43 +311,41 @@ model Review {
 }
 
 model Shipment {
-  id      String @id @default(uuid()) @db.Uuid
-  orderId String @map("order_id") @db.Uuid
-
-  courierName String @default("Delhivery")
-
-  awbNumber  String? @map("awb_number")
-  shipmentId String? @map("shipment_id")
-
-  pickupId String? @map("pickup_id")
-
-  labelUrl   String? @map("label_url")
-  invoiceUrl String? @map("invoice_url")
-
-  status String @default("CREATED") // CREATED, PICKED_UP, IN_TRANSIT, DELIVERED, RTO
-
+  id          String    @id @default(uuid()) @db.Uuid
+  orderId     String    @map("order_id") @db.Uuid
+  courierName String    @default("Delhivery")
+  awbNumber   String?   @map("awb_number")
+  shipmentId  String?   @map("shipment_id")
+  pickupId    String?   @map("pickup_id")
+  labelUrl    String?   @map("label_url")
+  invoiceUrl  String?   @map("invoice_url")
+  status      String    @default("CREATED")
   trackingUrl String?
-
-  rawResponse Json? @map("raw_response") // VERY IMPORTANT for debugging
-
+  rawResponse Json?     @map("raw_response")
   shippedAt   DateTime? @map("shipped_at")
   pickedAt    DateTime? @map("picked_at")
   deliveredAt DateTime? @map("delivered_at")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  order Order @relation(fields: [orderId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  order       Order     @relation(fields: [orderId], references: [id])
 }
 
 model OrderReturn {
-  id           String       @id @default(uuid()) @db.Uuid
-  orderItemId  String       @map("order_item_id") @db.Uuid
-  reason       String?
-  status       ReturnStatus @default(REQUESTED)
-  refundAmount Decimal?     @map("refund_amount") @db.Decimal(10, 2)
-  createdAt    DateTime     @default(now()) @map("created_at")
-  orderItem    OrderItem    @relation(fields: [orderItemId], references: [id])
+  id                    String       @id @default(uuid()) @db.Uuid
+  orderItemId           String       @map("order_item_id") @db.Uuid
+  type                  ReturnType   @default(EXCHANGE)
+  reason                String?
+  status                ReturnStatus @default(REQUESTED)
+  refundAmount          Decimal?     @map("refund_amount") @db.Decimal(10, 2)
+  // Exchange-specific fields (only meaningful when type = EXCHANGE)
+  desiredVariantId      String?      @map("desired_variant_id") @db.Uuid
+  adminNote             String?      @map("admin_note")
+  pickupShipmentId      String?      @map("pickup_shipment_id") @db.Uuid
+  replacementShipmentId String?      @map("replacement_shipment_id") @db.Uuid
+  respondedAt           DateTime?    @map("responded_at")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+  orderItem             OrderItem    @relation(fields: [orderItemId], references: [id])
 
   @@map("returns")
 }
@@ -520,6 +485,11 @@ enum ReturnStatus {
   REJECTED
   REFUNDED
   COMPLETED
+}
+
+enum ReturnType {
+  EXCHANGE
+  REFUND
 }
 
 enum AnalyticsEventName {

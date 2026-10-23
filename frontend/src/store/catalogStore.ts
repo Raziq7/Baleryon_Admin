@@ -8,6 +8,7 @@ export type Category = {
   slug: string;
   image?: string | null;
   parentId?: string | null;
+  parentName?: string | null;
   productCount?: number;
   createdAt: string;
 };

@@ -14,7 +14,9 @@ import { toLegacyProduct } from "../utils/productMapper.js";
 const productInclude = {
   category: true,
   brand: true,
-  variants: true,
+  variants: {
+    where: { isActive: true },
+  },
   images: {
     orderBy: { sortOrder: "asc" },
   },
@@ -141,6 +143,13 @@ export const addProductController = asyncHandler(async (req, res) => {
   const discount = Number(req.body.discount) || 0;
   const salePrice = discount > 0 ? numericPrice * (1 - discount / 100) : null;
 
+  const costPrice = req.body.costPrice ? Number(req.body.costPrice) : null;
+  if (req.body.costPrice && (isNaN(costPrice) || costPrice < 0)) {
+    return res.status(400).json({
+      message: "Purchase amount must be a valid number",
+    });
+  }
+
   const categoryRecord = await resolveCategory(parsedCategory);
 
   let parsedBrand = req.body.brand;
@@ -205,13 +214,19 @@ export const addProductController = asyncHandler(async (req, res) => {
         title: productName,
         slug,
         description,
+        productDetails: req.body.productDetails || null,
         shortDescription: req.body.note || "",
         note: req.body.note || "",
         basePrice: new Prisma.Decimal(numericPrice),
         salePrice: salePrice != null ? new Prisma.Decimal(salePrice) : null,
+        costPrice: costPrice != null ? new Prisma.Decimal(costPrice) : null,
         discountPercent: discount > 0 ? new Prisma.Decimal(discount) : null,
         isReturnable:
           req.body.isReturn === true || req.body.isReturn === "true",
+        isNewArrival:
+          req.body.isNewArrival === true || req.body.isNewArrival === "true",
+        isBestSeller:
+          req.body.isBestSeller === true || req.body.isBestSeller === "true",
         categoryId: categoryRecord?.id,
         brandId: brandRecord?.id ?? null,
         variants: {
@@ -366,32 +381,98 @@ function parseColorsFromBody(body) {
   return Array.from(colorMap.values());
 }
 
-function buildVariantCreates(
+function variantKey(color, size) {
+  return `${String(color).trim().toLowerCase()}|${String(size).trim().toUpperCase()}`;
+}
+
+async function generateUniqueSku(tx, base) {
+  let candidate = base.slice(0, 100);
+  let suffix = 0;
+
+  // eslint-disable-next-line no-await-in-loop
+  while (await tx.productVariant.findUnique({ where: { sku: candidate } })) {
+    suffix += 1;
+    const suffixStr = `-${suffix}`;
+    candidate = `${base.slice(0, 100 - suffixStr.length)}${suffixStr}`;
+  }
+
+  return candidate;
+}
+
+// Reconciles a product's variants against the desired color/size matrix
+// instead of deleting and recreating them. Existing variants (matched by
+// color+size) are updated in place so their id/sku survive; variants no
+// longer present are deactivated rather than deleted. Hard-deleting is
+// unsafe here: CartItem/InventoryLog hold required FKs to ProductVariant
+// with no onDelete override, so Prisma defaults to Restrict and the delete
+// throws whenever a variant is referenced by a cart or stock log, and
+// OrderItem's optional FK defaults to SetNull, silently erasing historical
+// order data for variants that DO get deleted.
+async function reconcileVariants(
+  tx,
+  productId,
   slug,
   parsedColors,
   parsedSizes,
   numericPrice,
   salePrice,
 ) {
-  const variantCreates = [];
-  let variantIndex = 0;
+  const currentVariants = await tx.productVariant.findMany({
+    where: { productId },
+  });
+  const byKey = new Map(
+    currentVariants.map((v) => [variantKey(v.color, v.size), v]),
+  );
+  const matchedIds = new Set();
 
   for (const colorItem of parsedColors) {
     const colorSlug = slugify(String(colorItem.name)).slice(0, 20) || "default";
     for (const row of parsedSizes) {
-      variantCreates.push({
-        sku: `${slug}-${colorSlug}-${row.size}-${variantIndex++}`.slice(0, 100),
-        color: String(colorItem.name).slice(0, 50),
-        colorHex: colorItem.hex ? String(colorItem.hex).slice(0, 7) : null,
-        size: String(row.size),
-        stock: Number(row.quantity) || 0,
-        price: new Prisma.Decimal(numericPrice),
-        salePrice: salePrice != null ? new Prisma.Decimal(salePrice) : null,
-      });
+      const existing = byKey.get(variantKey(colorItem.name, row.size));
+
+      if (existing) {
+        await tx.productVariant.update({
+          where: { id: existing.id },
+          data: {
+            stock: Number(row.quantity) || 0,
+            price: new Prisma.Decimal(numericPrice),
+            salePrice: salePrice != null ? new Prisma.Decimal(salePrice) : null,
+            colorHex: colorItem.hex ? String(colorItem.hex).slice(0, 7) : null,
+            isActive: true,
+          },
+        });
+        matchedIds.add(existing.id);
+      } else {
+        const baseSku = `${slug}-${colorSlug}-${String(row.size).trim()}`;
+        const sku = await generateUniqueSku(tx, baseSku);
+        const created = await tx.productVariant.create({
+          data: {
+            productId,
+            sku,
+            color: String(colorItem.name).slice(0, 50),
+            colorHex: colorItem.hex ? String(colorItem.hex).slice(0, 7) : null,
+            size: String(row.size).trim(),
+            stock: Number(row.quantity) || 0,
+            price: new Prisma.Decimal(numericPrice),
+            salePrice: salePrice != null ? new Prisma.Decimal(salePrice) : null,
+            isActive: true,
+          },
+        });
+        matchedIds.add(created.id);
+      }
     }
   }
 
-  return variantCreates;
+  const staleIds = currentVariants
+    .filter((v) => !matchedIds.has(v.id))
+    .map((v) => v.id);
+
+  if (staleIds.length) {
+    await tx.productVariant.updateMany({
+      where: { id: { in: staleIds } },
+      data: { isActive: false, stock: 0 },
+    });
+  }
 }
 
 // @desc    Update product
@@ -459,6 +540,13 @@ export const updateProductController = asyncHandler(async (req, res) => {
   const discount = Number(req.body.discount) || 0;
   const salePrice = discount > 0 ? numericPrice * (1 - discount / 100) : null;
 
+  const costPrice = req.body.costPrice ? Number(req.body.costPrice) : null;
+  if (req.body.costPrice && (isNaN(costPrice) || costPrice < 0)) {
+    return res.status(400).json({
+      message: "Purchase amount must be a valid number",
+    });
+  }
+
   const deletedImageIds = parseDeletedImageIds(req.body.deletedImageIds);
   const imagesToRemove = existing.images.filter((img) =>
     deletedImageIds.includes(img.id),
@@ -498,13 +586,6 @@ export const updateProductController = asyncHandler(async (req, res) => {
       : await uniqueSlug(prisma, productName.trim(), "product");
 
   const parsedColors = parseColorsFromBody(req.body);
-  const variantCreates = buildVariantCreates(
-    slug,
-    parsedColors,
-    parsedSizes,
-    numericPrice,
-    salePrice,
-  );
 
   const product = await prisma.$transaction(async (tx) => {
     if (deletedImageIds.length) {
@@ -529,7 +610,15 @@ export const updateProductController = asyncHandler(async (req, res) => {
       });
     }
 
-    await tx.productVariant.deleteMany({ where: { productId: id } });
+    await reconcileVariants(
+      tx,
+      id,
+      slug,
+      parsedColors,
+      parsedSizes,
+      numericPrice,
+      salePrice,
+    );
 
     return tx.product.update({
       where: { id },
@@ -537,16 +626,21 @@ export const updateProductController = asyncHandler(async (req, res) => {
         title: productName.trim(),
         slug,
         description,
+        productDetails: req.body.productDetails || null,
         shortDescription: req.body.note || "",
         note: req.body.note || "",
         basePrice: new Prisma.Decimal(numericPrice),
         salePrice: salePrice != null ? new Prisma.Decimal(salePrice) : null,
+        costPrice: costPrice != null ? new Prisma.Decimal(costPrice) : null,
         discountPercent: discount > 0 ? new Prisma.Decimal(discount) : null,
         isReturnable:
           req.body.isReturn === true || req.body.isReturn === "true",
+        isNewArrival:
+          req.body.isNewArrival === true || req.body.isNewArrival === "true",
+        isBestSeller:
+          req.body.isBestSeller === true || req.body.isBestSeller === "true",
         categoryId: categoryRecord?.id ?? null,
         brandId: brandRecord?.id ?? null,
-        variants: { create: variantCreates },
       },
       include: productInclude,
     });

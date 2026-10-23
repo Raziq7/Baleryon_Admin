@@ -38,11 +38,14 @@ export default function AddProductForm() {
     description: "",
     price: "",
     discount: "",
+    purchaseAmount: "",
     categoryId: "",
     brandId: "",
     note: "",
     productDetails: "",
     isReturn: false,
+    isNewArrival: false,
+    isBestSeller: false,
   });
   const [sizes, setSizes] = useState<SizeRow[]>([emptySize()]);
   const [colors, setColors] = useState<SelectedColor[]>([]);
@@ -159,6 +162,8 @@ export default function AddProductForm() {
     formData.append("description", form.description.trim());
     formData.append("price", form.price);
     if (form.discount) formData.append("discount", form.discount);
+    if (form.purchaseAmount)
+      formData.append("costPrice", form.purchaseAmount);
     formData.append(
       "category",
       JSON.stringify({ id: form.categoryId })
@@ -174,6 +179,8 @@ export default function AddProductForm() {
     if (form.productDetails)
       formData.append("productDetails", form.productDetails);
     formData.append("isReturn", String(form.isReturn));
+    formData.append("isNewArrival", String(form.isNewArrival));
+    formData.append("isBestSeller", String(form.isBestSeller));
     formData.append("sizes", JSON.stringify(validSizes));
 
     images.forEach((item) => formData.append("files", item.file));
@@ -272,7 +279,17 @@ export default function AddProductForm() {
             onChange={handleChange}
           />
         </div>
-        <div className="flex items-end gap-2 pb-2 sm:col-span-2">
+        <div>
+          <Label>Purchase Amount (₹)</Label>
+          <Input
+            type="number"
+            name="purchaseAmount"
+            placeholder="Cost price"
+            value={form.purchaseAmount}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="flex items-end gap-2 pb-2">
           <input
             type="checkbox"
             id="isReturn"
@@ -282,6 +299,28 @@ export default function AddProductForm() {
             className="h-4 w-4 rounded border-gray-300"
           />
           <Label htmlFor="isReturn">Returnable product</Label>
+        </div>
+        <div className="flex items-end gap-2 pb-2">
+          <input
+            type="checkbox"
+            id="isNewArrival"
+            name="isNewArrival"
+            checked={form.isNewArrival}
+            onChange={handleChange}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <Label htmlFor="isNewArrival">Show in New Arrivals</Label>
+        </div>
+        <div className="flex items-end gap-2 pb-2">
+          <input
+            type="checkbox"
+            id="isBestSeller"
+            name="isBestSeller"
+            checked={form.isBestSeller}
+            onChange={handleChange}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <Label htmlFor="isBestSeller">Show in Best Sellers</Label>
         </div>
       </div>
 

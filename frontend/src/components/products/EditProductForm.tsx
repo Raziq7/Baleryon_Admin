@@ -52,11 +52,14 @@ export default function EditProductForm({ productId }: Props) {
     description: "",
     price: "",
     discount: "",
+    purchaseAmount: "",
     categoryId: "",
     brandId: "",
     note: "",
     productDetails: "",
     isReturn: false,
+    isNewArrival: false,
+    isBestSeller: false,
   });
   const [sizes, setSizes] = useState<SizeRow[]>([emptySize()]);
   const [colors, setColors] = useState<SelectedColor[]>([]);
@@ -90,11 +93,17 @@ export default function EditProductForm({ productId }: Props) {
       description: selectedProduct.description || "",
       price: String(selectedProduct.price ?? ""),
       discount: String(selectedProduct.discount ?? ""),
+      purchaseAmount:
+        selectedProduct.purchaseAmount != null
+          ? String(selectedProduct.purchaseAmount)
+          : "",
       categoryId,
       brandId: selectedProduct.brand?.id || "",
       note: selectedProduct.note || "",
       productDetails: selectedProduct.productDetails || "",
       isReturn: !!selectedProduct.isReturn,
+      isNewArrival: !!selectedProduct.isNewArrival,
+      isBestSeller: !!selectedProduct.isBestSeller,
     });
 
     setSizes(
@@ -242,6 +251,8 @@ export default function EditProductForm({ productId }: Props) {
     formData.append("description", form.description.trim());
     formData.append("price", form.price);
     if (form.discount) formData.append("discount", form.discount);
+    if (form.purchaseAmount)
+      formData.append("costPrice", form.purchaseAmount);
     formData.append("category", JSON.stringify({ id: form.categoryId }));
     if (form.brandId) {
       formData.append("brand", JSON.stringify({ id: form.brandId }));
@@ -254,6 +265,8 @@ export default function EditProductForm({ productId }: Props) {
     if (form.productDetails)
       formData.append("productDetails", form.productDetails);
     formData.append("isReturn", String(form.isReturn));
+    formData.append("isNewArrival", String(form.isNewArrival));
+    formData.append("isBestSeller", String(form.isBestSeller));
     formData.append("sizes", JSON.stringify(validSizes));
     formData.append(
       "deletedImageIds",
@@ -347,7 +360,17 @@ export default function EditProductForm({ productId }: Props) {
             onChange={handleChange}
           />
         </div>
-        <div className="flex items-end gap-2 pb-2 sm:col-span-2">
+        <div>
+          <Label>Purchase Amount (₹)</Label>
+          <Input
+            type="number"
+            name="purchaseAmount"
+            placeholder="Cost price"
+            value={form.purchaseAmount}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="flex items-end gap-2 pb-2">
           <input
             type="checkbox"
             id="isReturnEdit"
@@ -357,6 +380,28 @@ export default function EditProductForm({ productId }: Props) {
             className="h-4 w-4 rounded border-gray-300"
           />
           <Label htmlFor="isReturnEdit">Returnable product</Label>
+        </div>
+        <div className="flex items-end gap-2 pb-2">
+          <input
+            type="checkbox"
+            id="isNewArrivalEdit"
+            name="isNewArrival"
+            checked={form.isNewArrival}
+            onChange={handleChange}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <Label htmlFor="isNewArrivalEdit">Show in New Arrivals</Label>
+        </div>
+        <div className="flex items-end gap-2 pb-2">
+          <input
+            type="checkbox"
+            id="isBestSellerEdit"
+            name="isBestSeller"
+            checked={form.isBestSeller}
+            onChange={handleChange}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <Label htmlFor="isBestSellerEdit">Show in Best Sellers</Label>
         </div>
       </div>
 

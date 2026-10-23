@@ -20,6 +20,7 @@ import OrderManagement from "./pages/orders/OrderManagement.tsx";
 import OrderDetailsPage from "./components/order/OrderDetailsPage.tsx";
 import ReportManagement from "./pages/Report/ReportManagement.tsx";
 import InventoryTab from "./pages/Inventory/Inventory.tsx";
+import ExchangeManagement from "./pages/Exchanges/ExchangeManagement.tsx";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
 
             <Route path="/report-management" element={<ReportManagement />} />
             <Route path="/inventory-management" element={<InventoryTab />} />
+            <Route path="/exchange-requests" element={<ExchangeManagement />} />
 
             <Route path="/workforce/leave" element={<MainLeave />} />
             <Route path="/workforce/events" element={<Calendar />} />

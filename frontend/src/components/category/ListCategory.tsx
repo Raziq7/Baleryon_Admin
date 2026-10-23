@@ -21,7 +21,7 @@ export default function ListCategory() {
 
   useEffect(() => {
     if (categories.length >= 0) {
-      setOpen(false);
+      // setOpen(false);
       setOpenEdit(false);
     }
   }, [categories]);
